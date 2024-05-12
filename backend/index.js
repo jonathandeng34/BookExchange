@@ -7,6 +7,8 @@ import express from 'express'
 console.log(constants)
 const app = express()
 
+app.use(express.json())
+
 app.get('/test', (req, res) => {
     res.json({
         "test": [1, 2, "three", 4, "five"]
@@ -17,3 +19,15 @@ app.get('/test', (req, res) => {
 app.listen(constants['port'], () => {
     console.log("Server started on port " + constants['port']);
 })
+
+app.get('/register', (req, res) => {
+    res.json({
+        status: "success or fail"
+        //also send confirmation email
+    })
+});
+
+app.post('/register', (req, res) => {
+    console.log(req.body);
+    res.send('Received user, pass, and email');
+});
