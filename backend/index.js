@@ -11,8 +11,6 @@ const app = express()
 let users = JSON.parse(fs.readFileSync('./data/users.json'));
 let emails = JSON.parse(fs.readFileSync('./data/emailconfirmation.json'))
 
-connectDB()
-
 app.use(express.json())
 
 app.get('/test', (req, res) => {
@@ -20,11 +18,6 @@ app.get('/test', (req, res) => {
         "test": [1, 2, "three", 4, "five"]
     })
 });
-
-// Tell the app to start listening for API calls
-app.listen(constants['port'], () => {
-    console.log("Server started on port " + constants['port']);
-})
 
 app.get('/register', (req, res) => {
     res.json({
@@ -80,3 +73,11 @@ app.get('/getbook', (req, res) => {
 app.get('/getbookexchanges', (req, res) => {
     res.json()
 });
+
+connectDB().then(() => {
+    // Tell the app to start listening for API calls
+    app.listen(constants['port'], () => {
+        console.log("Server started on port " + constants['port']);
+    })
+});
+
