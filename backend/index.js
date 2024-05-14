@@ -4,14 +4,24 @@ import constants from './constants.js'
 import express from 'express'
 import fs from 'fs'
 //const express = require('express')
+import mongoose, { mongo } from 'mongoose'
 import connectDB from './config/db.js'
 //const fs = require('fs');
+import Book from './db_models/book_model.js'
+import User from './db_models/user_model.js'
+import { BookController } from './controllers/book_controller.js'
+
+
 console.log(constants)
 const app = express()
 let users = JSON.parse(fs.readFileSync('./data/users.json'));
 let emails = JSON.parse(fs.readFileSync('./data/emailconfirmation.json'))
 
+connectDB()
+
 app.use(express.json())
+
+app.use('/book', BookController);
 
 app.get('/test', (req, res) => {
     res.json({
@@ -61,7 +71,7 @@ app.post('/forgotpassword', (req, res) => {
     // }
     const user = users[0];
     res.send({
-        user: user,
+        user: user
     });
 });
 
@@ -74,8 +84,13 @@ app.get('/getbookexchanges', (req, res) => {
     res.json()
 });
 
-connectDB().then(() => {
+
+
+//First connect to the database. If that was successful,
+//open the server to listen for HTTP requests.
+mongoose.connection.once('open', () => {
     // Tell the app to start listening for API calls
+
     app.listen(constants['port'], () => {
         console.log("Server started on port " + constants['port']);
     })
