@@ -13,6 +13,12 @@ const BookSchema = new mongoose.Schema({
         minlength: 1,
         trim: true
     },
+    genre: {
+        type: String,
+        required: true,
+        minlength: 1,
+        trim: true
+    },
     isBookOutForExchange: {
         type: Boolean,
         required: true,
@@ -20,7 +26,8 @@ const BookSchema = new mongoose.Schema({
     },
     bookOwner: {
         type: mongoose.Types.ObjectId,
-        required: true
+        required: true,
+        ref: 'User'
     }
 });
 
