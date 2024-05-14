@@ -4,11 +4,14 @@ import constants from './constants.js'
 import express from 'express'
 import fs from 'fs'
 //const express = require('express')
+import connectDB from './config/db.js'
 //const fs = require('fs');
 console.log(constants)
 const app = express()
 let users = JSON.parse(fs.readFileSync('./data/users.json'));
 let emails = JSON.parse(fs.readFileSync('./data/emailconfirmation.json'))
+
+connectDB()
 
 app.use(express.json())
 
