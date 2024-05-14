@@ -85,14 +85,41 @@ app.get('/getbookexchanges', (req, res) => {
 });
 
 
-
 //First connect to the database. If that was successful,
 //open the server to listen for HTTP requests.
 mongoose.connection.once('open', () => {
     // Tell the app to start listening for API calls
 
+    // GENERATE DUMMY DATA
+    generateDummyData();
+
     app.listen(constants['port'], () => {
         console.log("Server started on port " + constants['port']);
     })
 });
+
+async function generateDummyData() {
+    let bookCollectionLength = await Book.countDocuments({});
+    if(!bookCollectionLength | bookCollectionLength == 0) {
+        const dummyUser = new User({
+            _id: new mongoose.Types.ObjectId('6643d77345389a92052ed220'),
+            username: "Chocolate Enjoyer",
+            password: "This should be encrypted btw",
+            email: "hydroflask@g.ucla.edu",
+            userRating: 5
+        });
+        const doc = await dummyUser.save();
+        const dummyBook = new Book({
+            title: "The Tales of Rende East",
+            author: "Maanas G",
+            genre: "Fantasy",
+            isBookOutForExchange: false,
+            bookOwner: doc._id
+        });
+        await dummyBook.save();
+        console.log("Generated Dummy Data");
+        return;
+    }
+    console.log("Skipping Dummy Data Generation since books collection has something in it already");
+}
 
