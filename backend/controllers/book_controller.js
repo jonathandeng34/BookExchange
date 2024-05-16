@@ -1,6 +1,8 @@
 import mongoose from 'mongoose'
 import express from 'express'
 import Book from '../db_models/book_model.js';
+import { distance as editDistance } from 'fastest-levenshtein'
+import constants from '../constants.js'
 import User from '../db_models/user_model.js';
 
 const router = express.Router();
@@ -51,5 +53,46 @@ router.post('/upload', (req, res) => {
         res.send("Upload Successful");
     });
 });
+
+/**
+ * Search for books based on the title and genre
+ * Uses Levenshtein Distance
+ * JSON: Query String (searchQuery), Selected Genres (array of strings) (genreFilter)
+ * genreFilter is optional. If it isn't provided, genre isn't taken into account in the filter
+ * If searchQuery is empty or all whitespace, we'll just return all books
+ */
+router.get('/search', (req, res) => {
+    //First, let's get all the books that match a particular genre
+    //If genreFilter isn't present, ignore this filter
+    Book.find((req.body.genreFilter) ? {
+        genre: {
+            $in: req.body.genreFilter
+        }
+    } : {}).populate('bookOwner', '_id username').then(books => {
+        //Next, we'll assign each book title an edit distance using Levenshtein Distance
+        //TODO: Maybe we should implement this ourselves because of the whole you should code
+        //  most of it yourself thing in the grading. For now, this is just using an NPM package
+        //  I found
+
+        if(req.body.searchQuery.trim().length == 0) {
+            res.send(books);
+            return;
+        }
+
+        for (let book of books) {
+            book['editDistance'] = editDistance(req.body.searchQuery, book['title'])
+        }
+        //console.log(books)
+
+        //Next, let's filter out books above a certain edit distance threshold and then sort
+        // the remaining in ascending order by edit distance
+        const finalList = books.filter(book => (book['editDistance'] <= constants['maximumEditDistance']))
+            .sort((book1, book2) => book1['editDistance']-book2['editDistance'])
+        
+        //Send over the final list of filtered books!
+        res.send(finalList)
+
+    })
+})
 
 export { router as BookController };
