@@ -54,6 +54,32 @@ router.get('/get/:id', (req, res) => {
 */
 
 
+/*adds star rating to a book*/
+router.post('/rate/:id', (req, res) => {
+    const bookId = req.params.id;
+    const { starRating } = req.body;
+
+    //ensures that the star rating is between 1 and 5
+    if (typeof starRating !== 'number' || starRating < 1 || starRating > 5) {
+        return res.status(400).send("Star rating must be a number between 1 and 5.");
+    }
+
+    //find the book and update the starRating
+    Book.findOneAndUpdate(
+        { _id: bookId },
+        { starRating: starRating },
+        { new: true }
+    ).then((book) => {
+        if (!book) {
+            return res.status(404).send("Book Not Found!");
+        }
+        res.json({ message: "Star rating updated successfully", book });
+    }).catch((e) => {
+        res.status(500).send("Internal Server Error");
+    });
+});
+
+
 /**
  * Take in the JSON for a new book and upload it under the user who posted it
  * Since JWT isn't implemented yet, I'm hardcoding the owner right now.

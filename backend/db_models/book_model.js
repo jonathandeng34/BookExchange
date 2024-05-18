@@ -28,6 +28,11 @@ const BookSchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         required: true,
         ref: 'User'
+    },
+    starRating: {
+        type: Number,
+        required: true
+
     }
 });
 
