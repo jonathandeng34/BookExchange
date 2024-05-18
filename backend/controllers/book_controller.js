@@ -33,6 +33,27 @@ router.get('/get/:id', (req, res) => {
     });
 });
 
+
+/**
+ * Takes in the Object ID of a book and returns the star rating of that book.
+ 
+ router.get('/get/:id/starRating', (req, res) => {
+    Book.findOne({
+        _id: req.params.id
+    }).select('starRating').then((book) => {
+        if (!book) {
+            res.status(404).send("Book Not Found!");
+            return;
+        }
+        res.json({ starRating: book.starRating });
+    }).catch((e) => { //i guess we will probably remove this
+        res.status(500).send("Internal Server Error");
+    });
+});
+
+*/
+
+
 /**
  * Take in the JSON for a new book and upload it under the user who posted it
  * Since JWT isn't implemented yet, I'm hardcoding the owner right now.
