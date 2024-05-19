@@ -5,6 +5,8 @@ import express from 'express'
 import fs from 'fs'
 //const express = require('express')
 import mongoose, { mongo } from 'mongoose'
+import dotenv from 'dotenv'
+dotenv.config({ path: '../.env' });
 import connectDB from './config/db.js'
 //const fs = require('fs');
 import Book from './db_models/book_model.js'
@@ -12,7 +14,8 @@ import User from './db_models/user_model.js'
 import { BookController } from './controllers/book_controller.js'
 
 
-console.log(constants)
+//console.log(constants)
+const port = process.env.PORT || 5000;
 const app = express()
 let users = JSON.parse(fs.readFileSync('./data/users.json'));
 let emails = JSON.parse(fs.readFileSync('./data/emailconfirmation.json'))
@@ -36,16 +39,29 @@ app.get('/register', (req, res) => {
     })
 });
 
-app.post('/register', (req, res) => {
-   // console.log(req.body);
-    const newId = users[users.length-1].id+1;
-    const newUser = Object.assign({id: newId}, req.body);
-    users.push(newUser);
-    fs.writeFile('./data/users.json', JSON.stringify(users), (err) => {
+app.post('/register', async (req, res, next) => {
+    //console.log(req.body);
+    try {
+        const { username, password, email } = req.body;
+
+        const userExists = await User.exists({ email });
+
+        if (userExists) {
+            return res.status(400).json({error: 'User already exists'});
+        } 
+        const user = await User.create({
+            username,
+            password,
+            email
+        });
         res.status(201).json({
-            status: "success"
-        })
-    });
+            _id: user._id,
+            username: user.username,
+            email: user.email
+        });
+    } catch (error) {
+        next(error);
+    }
 });
 
 
@@ -91,10 +107,10 @@ mongoose.connection.once('open', () => {
     // Tell the app to start listening for API calls
 
     // GENERATE DUMMY DATA
-    generateDummyData();
+//    generateDummyData();
 
-    app.listen(constants['port'], () => {
-        console.log("Server started on port " + constants['port']);
+    app.listen(port, () => {
+        console.log("Server started on port " + port);
     })
 });
 

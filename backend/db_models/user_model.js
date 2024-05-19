@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import bcrypt from 'bcryptjs'
 
 const UserSchema = new mongoose.Schema({
     username: {
@@ -24,6 +25,15 @@ const UserSchema = new mongoose.Schema({
         required: true,
         default: 0
     }
+});
+
+UserSchema.pre('save', async function(next) {
+    if (!this.isModified('password')) {
+        next();
+    }
+
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
 });
 
 //Create a model for the "users" collection
