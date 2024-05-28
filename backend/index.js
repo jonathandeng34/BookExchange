@@ -17,8 +17,6 @@ import { BookController } from './controllers/book_controller.js'
 //console.log(constants)
 const port = process.env.PORT || 5000;
 const app = express()
-let users = JSON.parse(fs.readFileSync('./data/users.json'));
-let emails = JSON.parse(fs.readFileSync('./data/emailconfirmation.json'))
 
 connectDB()
 
@@ -78,27 +76,6 @@ app.post('/forgotpassword', (req, res) => {
          })
      });
  });
-
- app.get('/getuser/:id', (req, res) => {
-    const id = req.params.id;
-    // const user = {
-    //     id: 1,
-    //     username: "blah balh",
-    // }
-    const user = users[0];
-    res.send({
-        user: user
-    });
-});
-
-app.get('/getbook', (req, res) => {
-    res.json()
-});
-
-
-app.get('/getbookexchanges', (req, res) => {
-    res.json()
-});
 
 
 //First connect to the database. If that was successful,
