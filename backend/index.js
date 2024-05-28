@@ -12,6 +12,7 @@ import connectDB from './config/db.js'
 import Book from './db_models/book_model.js'
 import User from './db_models/user_model.js'
 import { BookController } from './controllers/book_controller.js'
+import { UserController } from './controllers/user_controller.js'
 
 
 //console.log(constants)
@@ -23,59 +24,60 @@ connectDB()
 app.use(express.json())
 
 app.use('/book', BookController);
+app.use('/user', UserController);
 
-app.get('/test', (req, res) => {
-    res.json({
-        "test": [1, 2, "three", 4, "five"]
-    })
-});
+// app.get('/test', (req, res) => {
+//     res.json({
+//         "test": [1, 2, "three", 4, "five"]
+//     })
+// });
 
-app.get('/register', (req, res) => {
-    res.json({
-        status: "success or fail"
-        //also send confirmation email
-    })
-});
+// app.get('/register', (req, res) => {
+//     res.json({
+//         status: "success or fail"
+//         //also send confirmation email
+//     })
+// });
 
-app.post('/register', async (req, res, next) => {
-    //console.log(req.body);
-    try {
-        const { username, password, email } = req.body;
+// app.post('/register', async (req, res, next) => {
+//     //console.log(req.body);
+//     try {
+//         const { username, password, email } = req.body;
 
-        const userExists = await User.exists({ email });
+//         const userExists = await User.exists({ email });
 
-        if (userExists) {
-            return res.status(400).json({error: 'User already exists'});
-        } 
-        const user = await User.create({
-            username,
-            password,
-            email
-        });
-        res.status(201).json({
-            _id: user._id,
-            username: user.username,
-            email: user.email
-        });
-    } catch (error) {
-        next(error);
-    }
-});
+//         if (userExists) {
+//             return res.status(400).json({error: 'User already exists'});
+//         } 
+//         const user = await User.create({
+//             username,
+//             password,
+//             email
+//         });
+//         res.status(201).json({
+//             _id: user._id,
+//             username: user.username,
+//             email: user.email
+//         });
+//     } catch (error) {
+//         next(error);
+//     }
+// });
 
 
-app.get('/forgotpassword', (req, res) => {
-    res.json()
-});
-app.post('/forgotpassword', (req, res) => {
-     const newId = emails[emails.length-1].id+1;
-     const newEmail = Object.assign({id: newId}, req.body);
-     emails.push(newEmail);
-     fs.writeFile('./data/emailconfirmation.json', JSON.stringify(emails), (err) => {
-         res.status(201).json({
-             status: "success"
-         })
-     });
- });
+// app.get('/forgotpassword', (req, res) => {
+//     res.json()
+// });
+// app.post('/forgotpassword', (req, res) => {
+//      const newId = emails[emails.length-1].id+1;
+//      const newEmail = Object.assign({id: newId}, req.body);
+//      emails.push(newEmail);
+//      fs.writeFile('./data/emailconfirmation.json', JSON.stringify(emails), (err) => {
+//          res.status(201).json({
+//              status: "success"
+//          })
+//      });
+//  });
 
 
 //First connect to the database. If that was successful,
