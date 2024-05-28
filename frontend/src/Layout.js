@@ -1,0 +1,18 @@
+import { Navbar} from "./Components/Navbar";
+import { Outlet } from "react-router-dom";
+
+export function Layout()
+{
+    return (
+        <>
+            <Navbar/>
+            <main>
+                <Outlet/> 
+            </main>
+        </>
+
+
+    )
+
+    //Outlet renders all of the child routes to this layout
+}
