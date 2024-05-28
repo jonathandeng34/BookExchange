@@ -2,7 +2,6 @@ import mongoose from 'mongoose'
 import express from 'express'
 import Book from '../db_models/book_model.js';
 import { distance as editDistance } from 'fastest-levenshtein'
-import constants from '../constants.js'
 import User from '../db_models/user_model.js';
 
 const router = express.Router();
@@ -133,7 +132,7 @@ router.get('/search', (req, res) => {
 
         //Next, let's filter out books above a certain edit distance threshold and then sort
         // the remaining in ascending order by edit distance
-        const finalList = books.filter(book => (book['editDistance'] <= constants['maximumEditDistance']))
+        const finalList = books.filter(book => (book['editDistance'] <= parseInt(process.env.MAXIMUM_EDIT_DISTANCE)))
             .sort((book1, book2) => book1['editDistance']-book2['editDistance'])
         
         //Send over the final list of filtered books!

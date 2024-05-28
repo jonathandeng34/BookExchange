@@ -1,6 +1,3 @@
-// This file will contain all the endpoints
-
-import constants from './constants.js'
 import express from 'express'
 import fs from 'fs'
 //const express = require('express')
@@ -15,7 +12,7 @@ import { BookController } from './controllers/book_controller.js'
 import { UserController } from './controllers/user_controller.js'
 
 
-//console.log(constants)
+
 const port = process.env.PORT || 5000;
 const app = express()
 
