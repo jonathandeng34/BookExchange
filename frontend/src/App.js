@@ -1,6 +1,12 @@
 import { React, useEffect, useState } from 'react'
+import { Button } from './Button';
 
 function App() {
+
+  function notify(msg)
+  {
+    alert(msg)
+  }
 
   const [text, setText] = useState('')
 
@@ -14,6 +20,7 @@ function App() {
   return (
     <div className="App">
       <p>{text}</p>
+      <Button func={notify} msg={"awesome"}/>
     </div>
   );
 }
