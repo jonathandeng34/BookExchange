@@ -11,6 +11,9 @@ export function Navbar()
             <Link to="/Login"> 
                 <button> Log In </button> 
             </Link>
+            <Link to="/BookInformation">
+                <button> Book Information Page </button>
+            </Link>
         </>
 
     )
