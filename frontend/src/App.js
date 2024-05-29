@@ -12,23 +12,18 @@ import { Login } from './Pages/Login.js'
 
 function App() {
 
-  /*
-  function notify(msg)
-  {
-    alert(msg)
-  }
-  */
 
-  //const [text, setText] = useState('')
+  const [text, setText] = useState('')
 
-  /*useEffect(() => {
+  useEffect(() => {
     fetch('/test').then(res => res.json())
     .then(json => {
       setText(JSON.stringify(json))
     })
-  }, []);*/
+  }, []);
 
   return (
+  <>
     <Router>
       <Routes>
         <Route element={<Layout/>}> 
@@ -36,14 +31,9 @@ function App() {
           <Route path="/Login" element={<Login/>}/>
         </Route>
       </Routes>
-    </Router>
-
-    /*
-    <div className="App">
-      <p>{text}</p>
-      <Button func={notify} msg={"awesome"}/>
-    </div>
-    */
+    </Router>    
+  </>
+    
   );
 }
 

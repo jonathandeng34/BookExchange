@@ -3,206 +3,111 @@
 
 
 /*specific CSS styling for logIn */
+
+/* CSS goes here :) */
+
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background: #F5EFE6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
 /* Log in Frame Wrapper */
-
-position: relative;
-width: 1331px;
-height: 1437px;
-
-background: #F5EFE6;
-
+.login-frame-wrapper {
+    width: 80%;
+    max-width: 1331px;
+    background: #F5EFE6;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 /* Log in Frame */
-
-position: absolute;
-width: 845px;
-height: 977px;
-left: 228px;
-top: 232px;
-
-background: #F5EFE6;
-
+.login-frame {
+    width: 100%;
+    max-width: 845px;
+    background: #FFFFFF;
+    padding: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-sizing: border-box;
+    text-align: center;
+}
 
 /* Log In */
-
-position: absolute;
-width: 214px;
-height: 47px;
-left: 300px;
-top: 148px;
-
-font-family: 'Inter';
-font-style: normal;
-font-weight: 600;
-font-size: 64px;
-line-height: 20px;
-/* or 31% */
-text-align: center;
-text-transform: uppercase;
-
-color: #000000;
-
-
-
-/* Email* */
-
-position: absolute;
-width: 51px;
-height: 20px;
-left: 269px;
-top: 352px;
-
-font-family: 'Inter';
-font-style: normal;
-font-weight: 600;
-font-size: 14px;
-line-height: 20px;
-/* identical to box height, or 143% */
-text-align: center;
-text-transform: uppercase;
-
-color: #4D869C;
-
-
+.login {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 64px;
+    text-transform: uppercase;
+    color: #000000;
+    margin-bottom: 40px;
+}
 
 /* Form */
+.form {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
 
-position: absolute;
-width: 300px;
-height: 227px;
-left: 257px;
-top: 340px;
+/* Input fields */
+.username, .password {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #000000;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
 
-
-
-/* Username */
-
-position: absolute;
-width: 300px;
-height: 45px;
-left: 257px;
-top: 340px;
-
-
-
-/* Rectangle */
-
-box-sizing: border-box;
-
-position: absolute;
-width: 300px;
-height: 45px;
-left: 257px;
-top: 340px;
-
-border: 1px solid #000000;
-border-radius: 4px;
-
-
-/* Password */
-
-position: absolute;
-width: 300px;
-height: 45px;
-left: 257px;
-top: 405px;
-
-
-
-/* Rectangle */
-
-box-sizing: border-box;
-
-position: absolute;
-width: 300px;
-height: 45px;
-left: 257px;
-top: 405px;
-
-border: 1px solid #000000;
-border-radius: 4px;
-
-
-/* password* */
-
-position: absolute;
-width: 88px;
-height: 20px;
-left: 269px;
-top: 417px;
-
-font-family: 'Inter';
-font-style: normal;
-font-weight: 600;
-font-size: 14px;
-line-height: 20px;
-/* identical to box height, or 143% */
-text-align: center;
-text-transform: uppercase;
-
-color: #4D869C;
-
-
+/* Labels */
+.email, .password-label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #4D869C;
+    text-align: left;
+}
 
 /* Login btn */
+.login-btn {
+    background: #E8DFCA;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    text-align: center;
+    padding: 10px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    text-transform: uppercase;
+    color: #4D869C;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
 
-position: absolute;
-width: 300px;
-height: 45px;
-left: 257px;
-top: 493px;
-
-
-
-/* Rectangle */
-
-position: absolute;
-width: 300px;
-height: 45px;
-left: 257px;
-top: 493px;
-
-background: #E8DFCA;
-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
-border-radius: 4px;
-
-
-/* login */
-
-position: absolute;
-width: 50px;
-height: 20px;
-left: 382px;
-top: 506px;
-
-font-family: 'Inter';
-font-style: normal;
-font-weight: 600;
-font-size: 16px;
-line-height: 20px;
-/* identical to box height, or 125% */
-text-align: center;
-text-transform: uppercase;
-
-color: #4D869C;
-
-
+.login-btn:hover {
+    background: #d8cfc0;
+}
 
 /* Don’t have an account yet? Sign up. */
+.no-account {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: #4D869C;
+    margin-top: 20px;
+}
 
-position: absolute;
-width: 292px;
-height: 20px;
-left: 261px;
-top: 547px;
-
-font-family: 'Montserrat';
-font-style: normal;
-font-weight: 500;
-font-size: 16px;
-line-height: 20px;
-/* identical to box height */
-text-align: center;
-
-color: #4D869C;
 

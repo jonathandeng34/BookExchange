@@ -11,8 +11,7 @@ export function Login() {
           <div className="username">
             <input type="text" placeholder="Enter your username" />
           </div>
-          <div className="password">Password</div>
-          <div className="password-input">
+          <div className="password">
             <input type="password" placeholder="Enter your password" />
           </div>
           <div className="login-btn">
