@@ -10,7 +10,7 @@ import { BookInformation } from './Pages/bookInfo.js'
 import { Catalog } from './Pages/catalog.js'
 import { CreateAccount } from './Pages/createAccount'
 import { ResetPassword } from './Pages/resetPassword'
-import { DirectMessage } from './Pages/DM'
+import { DirectMessaging } from './Pages/DM'
 import { Verification } from './Pages/verification'
 import { BookListing } from './Pages/bookListing'
 
@@ -38,6 +38,14 @@ function App() {
           <Route path="/" element={<Home/>}/>
           <Route path="/Login" element={<Login/>}/>
           <Route path="/BookInformation" element = {<BookInformation/>}/>
+          <Route path="/Catalog" element = {<Catalog/>}/>
+          <Route path="/CreateAccount" element = {<CreateAccount/>}/>
+          <Route path="/ResetPassword" element = {<ResetPassword/>}/>
+          <Route path="/DirectMessage" element = {<DirectMessaging/>}/>
+          <Route path="/Verification" element = {<Verification/>}/>
+          <Route path="/BookListing" element = {<BookListing/>}/>
+
+
         </Route>
       </Routes>
     </Router>    
