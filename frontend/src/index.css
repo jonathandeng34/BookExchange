@@ -1,1 +1,208 @@
 /* CSS goes  here :) */
+
+
+
+/*specific CSS styling for logIn */
+/* Log in Frame Wrapper */
+
+position: relative;
+width: 1331px;
+height: 1437px;
+
+background: #F5EFE6;
+
+
+/* Log in Frame */
+
+position: absolute;
+width: 845px;
+height: 977px;
+left: 228px;
+top: 232px;
+
+background: #F5EFE6;
+
+
+/* Log In */
+
+position: absolute;
+width: 214px;
+height: 47px;
+left: 300px;
+top: 148px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 64px;
+line-height: 20px;
+/* or 31% */
+text-align: center;
+text-transform: uppercase;
+
+color: #000000;
+
+
+
+/* Email* */
+
+position: absolute;
+width: 51px;
+height: 20px;
+left: 269px;
+top: 352px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+text-align: center;
+text-transform: uppercase;
+
+color: #4D869C;
+
+
+
+/* Form */
+
+position: absolute;
+width: 300px;
+height: 227px;
+left: 257px;
+top: 340px;
+
+
+
+/* Username */
+
+position: absolute;
+width: 300px;
+height: 45px;
+left: 257px;
+top: 340px;
+
+
+
+/* Rectangle */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 300px;
+height: 45px;
+left: 257px;
+top: 340px;
+
+border: 1px solid #000000;
+border-radius: 4px;
+
+
+/* Password */
+
+position: absolute;
+width: 300px;
+height: 45px;
+left: 257px;
+top: 405px;
+
+
+
+/* Rectangle */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 300px;
+height: 45px;
+left: 257px;
+top: 405px;
+
+border: 1px solid #000000;
+border-radius: 4px;
+
+
+/* password* */
+
+position: absolute;
+width: 88px;
+height: 20px;
+left: 269px;
+top: 417px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+text-align: center;
+text-transform: uppercase;
+
+color: #4D869C;
+
+
+
+/* Login btn */
+
+position: absolute;
+width: 300px;
+height: 45px;
+left: 257px;
+top: 493px;
+
+
+
+/* Rectangle */
+
+position: absolute;
+width: 300px;
+height: 45px;
+left: 257px;
+top: 493px;
+
+background: #E8DFCA;
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
+border-radius: 4px;
+
+
+/* login */
+
+position: absolute;
+width: 50px;
+height: 20px;
+left: 382px;
+top: 506px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 20px;
+/* identical to box height, or 125% */
+text-align: center;
+text-transform: uppercase;
+
+color: #4D869C;
+
+
+
+/* Don’t have an account yet? Sign up. */
+
+position: absolute;
+width: 292px;
+height: 20px;
+left: 261px;
+top: 547px;
+
+font-family: 'Montserrat';
+font-style: normal;
+font-weight: 500;
+font-size: 16px;
+line-height: 20px;
+/* identical to box height */
+text-align: center;
+
+color: #4D869C;
+

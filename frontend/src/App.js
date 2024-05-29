@@ -2,8 +2,12 @@ import { React, useEffect, useState } from 'react'
 import { Button } from './Components/Button';
 import './App.css'
 import { HashRouter as Router, Routes, Route} from 'react-router-dom';
-import { Home } from './Pages/home'
 import { Layout } from './Layout';
+
+import { Home } from './Pages/home'
+import { Login } from './Pages/Login.js'
+
+
 
 
 function App() {
@@ -29,6 +33,7 @@ function App() {
       <Routes>
         <Route element={<Layout/>}> 
           <Route path="/" element={<Home/>}/>
+          <Route path="/Login" element={<Login/>}/>
         </Route>
       </Routes>
     </Router>

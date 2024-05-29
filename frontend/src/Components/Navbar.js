@@ -8,6 +8,9 @@ export function Navbar()
             <Link to="/"> 
                 <button> Home </button> 
             </Link>
+            <Link to="/Login"> 
+                <button> Log In </button> 
+            </Link>
         </>
 
     )
