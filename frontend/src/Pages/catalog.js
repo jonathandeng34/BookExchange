@@ -1,5 +1,5 @@
 import React from 'react';
-import '../catalog.css'; // Assuming the CSS file is named styles.css
+import '../index.css'; // Assuming the CSS file is named styles.css
 
 export function Catalog() {
     return (
@@ -10,12 +10,13 @@ export function Catalog() {
             <div className="book-icon"></div>
 
 
-            <div className="book-text">Book 1:</div>
-            <div className="book-text">Book 2:</div>
-            <div className="book-text">Book 3:</div>
+            <div className="book-text" style={{ top: '400px', left: '50px' }}>Book 1:</div>
+            <div className="book-text" style={{ top: '700px', left: '50px' }}>Book 2:</div>
+            <div className="book-text" style={{ top: '1000px', left: '50px' }}>Book 3:</div>
 
 
-            <a href="#" className="book-info-link">Link to book information page</a>
+            {/* probably going to have to make these be links at some point similar to navigation */}
+            <a href="#" className="book-info-link">Link to book information page</a> 
             <a href="#" className="book-info-link">Link to book information page</a>
             <a href="#" className="book-info-link">Link to book information page</a>
 
@@ -23,7 +24,7 @@ export function Catalog() {
             <div className="search-text search-text-position">Search by title, author, and genre</div>
 
 
-            <div className="search-vector search-vector-position"></div>
+            <div className="search-vector search-vector-position" style={{ top: '200px'}}>  </div>
         </div>
     );
 }
