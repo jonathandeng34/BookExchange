@@ -1,15 +1,14 @@
 import express from 'express'
-import fs from 'fs'
-//const express = require('express')
 import mongoose, { mongo } from 'mongoose'
 import dotenv from 'dotenv'
 dotenv.config({ path: '../.env' });
 import connectDB from './config/db.js'
-//const fs = require('fs');
 import Book from './db_models/book_model.js'
 import User from './db_models/user_model.js'
 import { BookController } from './controllers/book_controller.js'
 import { UserController } from './controllers/user_controller.js'
+import scheduleJobs from './cron/cron_jobs.js';
+import { AuthController } from './controllers/auth_controller.js'
 
 
 
@@ -22,6 +21,7 @@ app.use(express.json())
 
 app.use('/book', BookController);
 app.use('/user', UserController);
+app.use('/auth', AuthController);
 
 // app.get('/test', (req, res) => {
 //     res.json({
@@ -77,6 +77,9 @@ app.use('/user', UserController);
 //  });
 
 
+
+
+
 //First connect to the database. If that was successful,
 //open the server to listen for HTTP requests.
 mongoose.connection.once('open', () => {
@@ -87,6 +90,8 @@ mongoose.connection.once('open', () => {
 
     app.listen(port, () => {
         console.log("Server started on port " + port);
+        //Cron Jobs
+        scheduleJobs();    
     })
 });
 

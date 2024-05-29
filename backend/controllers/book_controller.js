@@ -27,8 +27,7 @@ router.get('/get/:id', (req, res) => {
         res.send(book);
     }).catch((e) => {
         res.status(500);
-        //TODO: Remove this. We don't want to send internal errors to the client
-        res.send(e);
+        //res.send(e);
     });
 });
 
