@@ -3,6 +3,7 @@ import express from 'express'
 import Book from '../db_models/book_model.js';
 import { distance as editDistance } from 'fastest-levenshtein'
 import User from '../db_models/user_model.js';
+import validateJWT from '../security/validate_jwt.js';
 
 const router = express.Router();
 
@@ -14,20 +15,35 @@ and posting of book information.
 /**
  * Takes in the Object ID of a book and returns a JSON object of that book.
  * Replaces the bookOwner field in the database document from the owner's
- * Object ID to an object with the owner's Object ID and username.
+ * Object ID to an object with the owner's Object ID, username, and user rating.
  */
 router.get('/get/:id', (req, res) => {
     Book.findOne({
         _id: req.params.id
-    }).populate('bookOwner', '_id username').then((book) => {
+    }).populate('bookOwner', '_id username userRating').then((book) => {
         if(!book) {
             res.status(404);
             res.send("Book Not Found!");
         }
         res.send(book);
     }).catch((e) => {
-        res.status(500);
+        res.sendStatus(500);
         //res.send(e);
+    });
+});
+
+/**
+ * Takes in a User ID as a parameter and gives all books that are owned by that user.
+ * Replaces the bookOwner Object ID with more information about the user.
+ */
+router.get('/ownedby/:id', (req, res) => {
+    Book.find({
+        bookOwner: req.params.id
+    }).populate('bookOwner', '_id username userRating').then((books) => {
+        res.send(books);
+    }).catch((e) => {
+        console.log(e);
+        res.sendStatus(500);
     });
 });
 
@@ -73,6 +89,7 @@ router.post('/rate/:id', (req, res) => {
         }
         res.json({ message: "Star rating updated successfully", book });
     }).catch((e) => {
+        console.log(e);
         res.status(500).send("Internal Server Error");
     });
 });
@@ -86,13 +103,13 @@ router.post('/rate/:id', (req, res) => {
  * Title, Author, Genre
  */
 //TODO: Replace the Hardcoded User with the User Encoded in JWT Token
-router.post('/upload', (req, res) => {
+router.post('/upload', validateJWT(), (req, res) => {
     let newBook = new Book({
         title: req.body.title,
         author: req.body.author,
         genre: req.body.genre,
         isBookOutForExchange: false,
-        bookOwner: new mongoose.Types.ObjectId('6643d77345389a92052ed220')
+        bookOwner: req.userId
     });
     newBook.save().then(doc => {
         res.send("Upload Successful");

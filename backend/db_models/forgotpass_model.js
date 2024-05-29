@@ -1,16 +1,10 @@
 import mongoose from 'mongoose';
 
 const ForgotPasswordSchema = new mongoose.Schema({
-    userID: {
+    userId: {
         type: mongoose.Types.ObjectId,
         required: true,
         ref: 'User'
-    },
-    code: {
-        type: String,
-        required: true,
-        minlength: 4,
-        trim: true
     },
     expirationDate: {
         type: Date,

@@ -12,7 +12,7 @@ function scheduleJobs() {
         }
         ForgotPasswordModel.deleteMany({
             expirationDate: {
-                $gte: new Date()
+                $lte: new Date()
             }
         }).then(() => {
             console.log("Removed Stale Forgot Password Requests");

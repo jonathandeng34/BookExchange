@@ -17,6 +17,7 @@ router.get('/:id', (req, res) => {
         }
         res.json(user);
     }).catch((e) => {
+        console.log(e);
         res.status(500).send("Internal Server Error");
     });
 });

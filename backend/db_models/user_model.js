@@ -24,16 +24,33 @@ const UserSchema = new mongoose.Schema({
         type: Number,
         required: true,
         default: 0
-    }
+    },
+    exchangedBooks: [{
+        type: mongoose.Types.ObjectId,
+        ref: 'Book'
+    }]
 });
 
-UserSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) {
-        next();
+UserSchema.pre(/(^save|[Uu]pdate)/, async function(next) {
+
+    let updateObj = this;
+
+    if(this.getUpdate) {
+        updateObj = this.getUpdate();
     }
 
+    if (this.isModified && !this.isModified('password')) {
+        return next();
+    }
+    if(!updateObj.password) {
+        return next();
+    }
+
+
+
     const salt = await bcrypt.genSalt();
-    this.password = await bcrypt.hash(this.password, salt);
+    updateObj.password = await bcrypt.hash(updateObj.password, salt);
+    next();
 });
 
 //Create a model for the "users" collection
