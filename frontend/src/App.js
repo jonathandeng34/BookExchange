@@ -1,19 +1,12 @@
 import { React, useEffect, useState } from 'react'
+import {Login} from './pages/Login'
 
 function App() {
 
-  const [text, setText] = useState('')
-
-  useEffect(() => {
-    fetch('/test').then(res => res.json())
-    .then(json => {
-      setText(JSON.stringify(json))
-    })
-  }, []);
 
   return (
     <div className="App">
-      <p>{text}</p>
+      <Login />
     </div>
   );
 }
