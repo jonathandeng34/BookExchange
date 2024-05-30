@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
+import Button from '@mui/material/Button';
+
 
 export function Navbar()
 {
@@ -6,31 +8,49 @@ export function Navbar()
 
         <>
             <Link to="/"> 
-                <button> Home </button> 
+                <Button variant="contained">
+                      Home
+                </Button> 
             </Link>
             <Link to="/Login"> 
-                <button> Log In </button> 
+                <Button variant="contained"> 
+                    Log In 
+                </Button> 
             </Link>
             <Link to="/BookInformation">
-                <button> Book Information Page </button>
+                <Button variant="contained"> 
+                    Book Information Page
+                 </Button>
             </Link>
             <Link to="/Catalog">
-                <button> Catalog Page </button>
+                <Button variant="contained"> 
+                    Catalog Page 
+                </Button>
             </Link>
             <Link to="/CreateAccount">
-                <button> Create Account Page </button>
+                <Button variant="contained"> 
+                    Create Account Page 
+                </Button>
             </Link>
             <Link to="/ResetPassword">
-                <button> Reset Password Page </button>
+                <Button variant="contained"> 
+                    Reset Password Page 
+                </Button>
             </Link>
             <Link to="/DirectMessage">
-                <button> DM Page </button>
+                <Button variant="contained"> 
+                    DM Page
+                </Button>
             </Link>
             <Link to="/Verification">
-                <button> Verification Page </button>
+                <Button variant="contained"> 
+                    Verification Page 
+                </Button>
             </Link>
             <Link to="/BookListing">
-                <button> Book Listing Page </button>
+                <Button variant="contained"> 
+                    Book Listing Page 
+                </Button>
             </Link>
         </>
 

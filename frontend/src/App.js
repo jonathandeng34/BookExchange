@@ -1,8 +1,9 @@
 import { React, useEffect, useState } from 'react'
-import { Button } from './Components/Button';
+//import { Button } from './Components/Button';
 import './App.css'
 import { HashRouter as Router, Routes, Route} from 'react-router-dom';
 import { Layout } from './Layout';
+
 
 import { Home } from './Pages/home'
 import { Login } from './Pages/Login.js'
