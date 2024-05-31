@@ -26,7 +26,10 @@ export function Home() {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                overflowY: 'auto' // Allow content to be scrollable
+                overflowY: 'auto', // Allow content to be scrollable
+                fontFamily: 'var(--secondary-font)', // Use custom font
+                color: '#476B70', // Matching text color
+                fontSize: '16px', // Matching font size
             }}
         >
             <Box mt={4}>
@@ -36,9 +39,9 @@ export function Home() {
                     sx={{ 
                         backgroundColor: '#E8DFCA', 
                         color: '#4D869C', 
-                        fontFamily: 'Inter', 
+                        fontFamily: 'var(--secondary-font)', // Use custom font
                         fontWeight: 600, 
-                        textTransform: 'uppercase',
+                        textTransform: 'none', // Change text transformation to none
                         padding: '10px 20px',
                         borderRadius: '8px',
                         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.3)',
@@ -55,9 +58,9 @@ export function Home() {
                 <Typography 
                     variant="h6" 
                     sx={{ 
-                        fontFamily: 'Inter', 
                         fontWeight: 600, 
-                        color: '#000000'
+                        color: '#000000',
+                        fontFamily: 'var(--secondary-font)', // Use custom font
                     }}
                 >
                     Your user rating: {userRating}
@@ -71,9 +74,9 @@ export function Home() {
                     sx={{ 
                         backgroundColor: '#4D869C', 
                         color: '#FFFFFF', 
-                        fontFamily: 'Inter', 
+                        fontFamily: 'var(--secondary-font)', // Use custom font
                         fontWeight: 600, 
-                        textTransform: 'uppercase',
+                        textTransform: 'none',
                         padding: '10px 20px',
                         borderRadius: '8px'
                     }}
@@ -86,19 +89,20 @@ export function Home() {
                 <Typography 
                     variant="h6" 
                     sx={{ 
-                        fontFamily: 'Inter', 
                         fontWeight: 600, 
-                        color: '#000000'
+                        color: '#000000',
+                        fontFamily: 'var(--secondary-font)', // Use custom font
                     }}
                 >
-                    We noticed that you exchanged most for {mostExchangedGenre} genre of books. 
+                    We noticed that you exchanged most for the genre: {mostExchangedGenre}.
+             
                     Here are more books from this genre which you haven’t exchanged for yet:
                 </Typography>
                 {/* This section will list books from the genre. Replace with dynamic content */}
                 <Box mt={2}>
-                    <Typography variant="body1" sx={{ fontFamily: 'Inter', color: '#000000', mt: 2 }}>Book 1</Typography>
-                    <Typography variant="body1" sx={{ fontFamily: 'Inter', color: '#000000', mt: 2 }}>Book 2</Typography>
-                    <Typography variant="body1" sx={{ fontFamily: 'Inter', color: '#000000', mt: 2 }}>Book 3</Typography>
+                    <Typography variant="body1" sx={{ color: '#000000', mt: 2, fontFamily: 'var(--secondary-font)' }}>Book 1</Typography>
+                    <Typography variant="body1" sx={{ color: '#000000', mt: 2, fontFamily: 'var(--secondary-font)' }}>Book 2</Typography>
+                    <Typography variant="body1" sx={{ color: '#000000', mt: 2, fontFamily: 'var(--secondary-font)' }}>Book 3</Typography>
                 </Box>
             </Box>
         </Container>

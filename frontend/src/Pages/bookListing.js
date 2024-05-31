@@ -48,14 +48,15 @@ export function BookListing() {
             />
           </label>
         </div>
-        <div style={{ marginBottom: '20px' }}>
-          <label>
-            Book Image: <br />
+        <div style={{ marginBottom: '20px', position: 'relative' }}>
+          <label htmlFor="upload-file" style={{ cursor: 'pointer', backgroundColor: '#f0f0f0', color: '#333', padding: '10px 20px', borderRadius: '5px', fontSize: '16px', display: 'inline-block' }}>
+            Click to upload book image <br />
             <input
               type="file"
               accept="image/*"
               onChange={(e) => setFile(e.target.files[0])}
               required
+              style={{ opacity: 0, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', cursor: 'pointer' }}
             />
           </label>
         </div>

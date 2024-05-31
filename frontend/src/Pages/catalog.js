@@ -75,8 +75,6 @@ export function Catalog() {
                             <Typography variant="h6">{book.title}</Typography>
                             <Typography variant="subtitle1">{book.author}</Typography>
                             <Typography variant="subtitle2">{book.genre}</Typography>
-                            {/* Link to book information page */}
-                            <a href="#" className="book-info-link">Link to book information page</a>
                         </div>
                     </Grid>
                 ))}
