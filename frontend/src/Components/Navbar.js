@@ -2,11 +2,13 @@ import { Link } from "react-router-dom";
 import Button from '@mui/material/Button';
 
 
+
 export function Navbar()
 {
     return (
 
         <>
+        <div style={{ marginTop: '800px' }}>
             <Link to="/"> 
                 <Button variant="contained">
                       Home
@@ -52,7 +54,8 @@ export function Navbar()
                     Book Listing Page 
                 </Button>
             </Link>
-        </>
+        </div>
+    </>
 
     )
 }
