@@ -8,9 +8,10 @@ import Book from './db_models/book_model.js'
 import User from './db_models/user_model.js'
 import { BookController } from './controllers/book_controller.js'
 import { UserController } from './controllers/user_controller.js'
-import scheduleJobs from './cron/cron_jobs.js';
+import scheduleJobs from './cron/cron_jobs.js'
 import { AuthController } from './controllers/auth_controller.js'
-import { BookExchangeController } from './controllers/book_exchange_controller.js';
+import { BookExchangeController } from './controllers/book_exchange_controller.js'
+import { MessageController } from './controllers/message_controller.js'
 
 
 
@@ -26,6 +27,7 @@ app.use('/book', BookController);
 app.use('/user', UserController);
 app.use('/auth', AuthController);
 app.use('/bookexchange', BookExchangeController);
+app.use('/message', MessageController);
 
 // app.get('/test', (req, res) => {
 //     res.json({
