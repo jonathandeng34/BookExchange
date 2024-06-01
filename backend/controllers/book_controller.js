@@ -5,6 +5,9 @@ import { distance as editDistance } from 'fastest-levenshtein'
 import User from '../db_models/user_model.js';
 import validateJWT from '../security/validate_jwt.js';
 
+import validateSchema from '../frontend_models/validate_schema.js';
+import { RateSchema, UploadBookSchema, SearchSchema } from '../frontend_models/book_schemas.js';
+
 const router = express.Router();
 
 /*
@@ -155,7 +158,7 @@ router.delete('/:id', validateJWT(), (req, res) => {
  * genreFilter is optional. If it isn't provided, genre isn't taken into account in the filter
  * If searchQuery is empty or all whitespace, we'll just return all books
  */
-router.get('/search', (req, res) => {
+router.get('/search', validateSchema(SearchSchema), (req, res) => {
     //First, let's get all the books that match a particular genre
     //If genreFilter isn't present, ignore this filter
     Book.find((req.body.genreFilter) ? {

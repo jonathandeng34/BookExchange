@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
 import validateSchema from '../frontend_models/validate_schema.js';
-import { LoginSchema } from '../frontend_models/auth_schemas.js';
+import { LoginSchema, RegisterSchema, ForgotPasswordSchema, ChangePasswordSchema } from '../frontend_models/auth_schemas.js';
 import ForgotPasswordModel from '../db_models/forgotpass_model.js';
 
 const router = express.Router();

@@ -22,3 +22,17 @@ const UploadBookSchema = {
     additionalProperties: false
 };
 export { UploadBookSchema };
+
+
+const SearchSchema = {
+    type: "object",
+    properties: {
+        search_query: {type: "string"},
+        selected_genres: {type: "array"}
+    },
+    required: ["search_query"],
+    additionalProperties: false
+};
+export { SearchSchema };
+
+
