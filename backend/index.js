@@ -2,6 +2,7 @@ import express from 'express'
 import mongoose, { mongo } from 'mongoose'
 import dotenv from 'dotenv'
 dotenv.config({ path: '../.env' });
+import cookieParser from 'cookie-parser'
 import connectDB from './config/db.js'
 import Book from './db_models/book_model.js'
 import User from './db_models/user_model.js'
@@ -15,6 +16,7 @@ import { BookExchangeController } from './controllers/book_exchange_controller.j
 
 const port = process.env.PORT || 5000;
 const app = express()
+app.use(cookieParser())
 
 connectDB()
 

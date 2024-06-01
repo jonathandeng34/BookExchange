@@ -2,14 +2,13 @@ import jwt from 'jsonwebtoken'
 
 function validateJWT() {
     return (req, res, next) => {
-        const authHeader = req.header(process.env.TOKEN_HEADER_KEY);
-        if(!authHeader || !authHeader.startsWith("Bearer ")) {
+        const token = req.cookies.jwt;
+        if(!token) {
             return res.status(401).json({
-                reason: "Invalid Authorization Header"
+              reason: "Unauthorized"
             });
         }
 
-        const token = authHeader.replace("Bearer ", "");
         try {
             const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
             req.userId = decodedToken.userId;
