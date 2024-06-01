@@ -131,7 +131,7 @@ router.post('/login', validateSchema(LoginSchema), (req, res) => {
  * Expected JSON:
  * Email
  */
-router.post('/forgotpassword/request', (req, res) => {
+router.post('/forgotpassword/request', validateSchema(forgotPasswordSchema), (req, res) => {
     User.findOne({
         email: req.body.email
     }).then(user => {
@@ -179,7 +179,7 @@ router.get('/forgotpassword/check_code/:code', (req, res) => {
 /**JSON
  * Password
  */
-router.post('/forgotpassword/change_password/:code', (req, res) => {
+router.post('/forgotpassword/change_password/:code', validateSchema(changePasswordSchema), (req, res) => {
 
     ForgotPasswordModel.findById(req.params.code).then(forgotReq => {
         if(!forgotReq) {
