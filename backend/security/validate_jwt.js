@@ -5,7 +5,7 @@ function validateJWT() {
         const authHeader = req.header(process.env.TOKEN_HEADER_KEY);
         if(!authHeader || !authHeader.startsWith("Bearer ")) {
             return res.status(401).json({
-                message: "Invalid Authorization Header"
+                reason: "Invalid Authorization Header"
             });
         }
 

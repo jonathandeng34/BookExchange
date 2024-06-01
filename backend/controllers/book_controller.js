@@ -122,6 +122,12 @@ router.delete('/:id', validateJWT(), (req, res) => {
         if(!book) {
             res.sendStatus(404);
         }
+        if(book.isBookOutForExchange) {
+            res.status(400);
+            res.send({
+                "reason": "Book Out for Exchange"
+            });
+        }
 
         if(book.bookOwner.toString() != req.userId) {
             res.sendStatus(401);
