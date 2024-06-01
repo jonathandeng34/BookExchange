@@ -1,104 +1,87 @@
-// This file will contain all the endpoints
-
-import constants from './constants.js'
 import express from 'express'
-import fs from 'fs'
-//const express = require('express')
 import mongoose, { mongo } from 'mongoose'
 import dotenv from 'dotenv'
 dotenv.config({ path: '../.env' });
+import cookieParser from 'cookie-parser'
 import connectDB from './config/db.js'
-//const fs = require('fs');
 import Book from './db_models/book_model.js'
 import User from './db_models/user_model.js'
 import { BookController } from './controllers/book_controller.js'
+import { UserController } from './controllers/user_controller.js'
+import scheduleJobs from './cron/cron_jobs.js';
+import { AuthController } from './controllers/auth_controller.js'
+import { BookExchangeController } from './controllers/book_exchange_controller.js';
 
 
-//console.log(constants)
+
 const port = process.env.PORT || 5000;
 const app = express()
-let users = JSON.parse(fs.readFileSync('./data/users.json'));
-let emails = JSON.parse(fs.readFileSync('./data/emailconfirmation.json'))
+app.use(cookieParser())
 
 connectDB()
 
 app.use(express.json())
 
 app.use('/book', BookController);
+app.use('/user', UserController);
+app.use('/auth', AuthController);
+app.use('/bookexchange', BookExchangeController);
 
-app.get('/test', (req, res) => {
-    res.json({
-        "test": [1, 2, "three", 4, "five"]
-    })
-});
+// app.get('/test', (req, res) => {
+//     res.json({
+//         "test": [1, 2, "three", 4, "five"]
+//     })
+// });
 
-app.get('/register', (req, res) => {
-    res.json({
-        status: "success or fail"
-        //also send confirmation email
-    })
-});
+// app.get('/register', (req, res) => {
+//     res.json({
+//         status: "success or fail"
+//         //also send confirmation email
+//     })
+// });
 
-app.post('/register', async (req, res, next) => {
-    //console.log(req.body);
-    try {
-        const { username, password, email } = req.body;
+// app.post('/register', async (req, res, next) => {
+//     //console.log(req.body);
+//     try {
+//         const { username, password, email } = req.body;
 
-        const userExists = await User.exists({ email });
+//         const userExists = await User.exists({ email });
 
-        if (userExists) {
-            return res.status(400).json({error: 'User already exists'});
-        } 
-        const user = await User.create({
-            username,
-            password,
-            email
-        });
-        res.status(201).json({
-            _id: user._id,
-            username: user.username,
-            email: user.email
-        });
-    } catch (error) {
-        next(error);
-    }
-});
-
-
-app.get('/forgotpassword', (req, res) => {
-    res.json()
-});
-app.post('/forgotpassword', (req, res) => {
-     const newId = emails[emails.length-1].id+1;
-     const newEmail = Object.assign({id: newId}, req.body);
-     emails.push(newEmail);
-     fs.writeFile('./data/emailconfirmation.json', JSON.stringify(emails), (err) => {
-         res.status(201).json({
-             status: "success"
-         })
-     });
- });
-
- app.get('/getuser/:id', (req, res) => {
-    const id = req.params.id;
-    // const user = {
-    //     id: 1,
-    //     username: "blah balh",
-    // }
-    const user = users[0];
-    res.send({
-        user: user
-    });
-});
-
-app.get('/getbook', (req, res) => {
-    res.json()
-});
+//         if (userExists) {
+//             return res.status(400).json({error: 'User already exists'});
+//         } 
+//         const user = await User.create({
+//             username,
+//             password,
+//             email
+//         });
+//         res.status(201).json({
+//             _id: user._id,
+//             username: user.username,
+//             email: user.email
+//         });
+//     } catch (error) {
+//         next(error);
+//     }
+// });
 
 
-app.get('/getbookexchanges', (req, res) => {
-    res.json()
-});
+// app.get('/forgotpassword', (req, res) => {
+//     res.json()
+// });
+// app.post('/forgotpassword', (req, res) => {
+//      const newId = emails[emails.length-1].id+1;
+//      const newEmail = Object.assign({id: newId}, req.body);
+//      emails.push(newEmail);
+//      fs.writeFile('./data/emailconfirmation.json', JSON.stringify(emails), (err) => {
+//          res.status(201).json({
+//              status: "success"
+//          })
+//      });
+//  });
+
+
+
 
 
 //First connect to the database. If that was successful,
@@ -111,6 +94,8 @@ mongoose.connection.once('open', () => {
 
     app.listen(port, () => {
         console.log("Server started on port " + port);
+        //Cron Jobs
+        scheduleJobs();    
     })
 });
 
