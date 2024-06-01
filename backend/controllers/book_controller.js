@@ -116,6 +116,38 @@ router.post('/upload', validateJWT(), (req, res) => {
     });
 });
 
+router.delete('/:id', validateJWT(), (req, res) => {
+    Book.findById(req.params.id).then((book) => {
+
+        if(!book) {
+            res.sendStatus(404);
+        }
+        if(book.isBookOutForExchange) {
+            res.status(400);
+            res.send({
+                "reason": "Book Out for Exchange"
+            });
+        }
+
+        if(book.bookOwner.toString() != req.userId) {
+            res.sendStatus(401);
+            return;
+        }
+
+        Book.findByIdAndDelete(req.params.id).then(() => {
+            res.sendStatus(200);
+        }).catch(e => {
+            console.log(e);
+            res.sendStatus(500);
+        })
+
+    })
+    .catch(e => {
+        console.log(e);
+        res.sendStatus(500);
+    })
+});
+
 /**
  * Search for books based on the title and genre
  * Uses Levenshtein Distance
@@ -155,6 +187,6 @@ router.get('/search', (req, res) => {
         res.send(finalList)
 
     })
-})
+});
 
 export { router as BookController };
