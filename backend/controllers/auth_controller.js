@@ -17,7 +17,7 @@ const router = express.Router();
  * Username
  * Password
  */
-router.post('/register', async (req, res) => {
+router.post('/register', validateSchema(RegisterSchema), async (req, res) => {
     //Make sure the given email is a g.ucla.edu email
 
     let domainName = req.body.email.split('@')[1];
@@ -131,7 +131,7 @@ router.post('/login', validateSchema(LoginSchema), (req, res) => {
  * Expected JSON:
  * Email
  */
-router.post('/forgotpassword/request', validateSchema(forgotPasswordSchema), (req, res) => {
+router.post('/forgotpassword/request', validateSchema(ForgotPasswordSchema), (req, res) => {
     User.findOne({
         email: req.body.email
     }).then(user => {
@@ -179,7 +179,7 @@ router.get('/forgotpassword/check_code/:code', (req, res) => {
 /**JSON
  * Password
  */
-router.post('/forgotpassword/change_password/:code', validateSchema(changePasswordSchema), (req, res) => {
+router.post('/forgotpassword/change_password/:code', validateSchema(ChangePasswordSchema), (req, res) => {
 
     ForgotPasswordModel.findById(req.params.code).then(forgotReq => {
         if(!forgotReq) {

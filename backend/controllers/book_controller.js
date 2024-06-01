@@ -69,7 +69,7 @@ router.get('/ownedby/:id', (req, res) => {
 
 
 /*adds star rating to a book*/
-router.post('/rate/:id', (req, res) => {
+router.post('/rate/:id', validateSchema(RateSchema), (req, res) => {
     const bookId = req.params.id;
     const { starRating } = req.body;
 
@@ -103,7 +103,7 @@ router.post('/rate/:id', (req, res) => {
  * Title, Author, Genre
  */
 //TODO: Replace the Hardcoded User with the User Encoded in JWT Token
-router.post('/upload', validateJWT(), (req, res) => {
+router.post('/upload', validateSchema(UploadBookSchema), validateJWT(), (req, res) => {
     let newBook = new Book({
         title: req.body.title,
         author: req.body.author,

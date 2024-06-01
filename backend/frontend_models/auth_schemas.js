@@ -1,5 +1,18 @@
 import ajv from "ajv"
 
+const RegisterSchema = {
+    type: "object",
+    properties: {
+        email: {type: "string"},
+        username: {type: "string"},
+        password: {type: "string"}
+    },
+    required: ["email", "username", "password"],
+    additionalProperties: false
+};
+export { RegisterSchema };
+
+
 const LoginSchema = {
     type: "object",
     properties: {
@@ -12,18 +25,18 @@ const LoginSchema = {
 export { LoginSchema };
 
 
-const forgotPasswordSchema = {
+const ForgotPasswordSchema = {
     type: "object",
     properties: {
-        email: {type: "string"},
+        email: {type: "string"}
     },
     required: ["email"],
     additionalProperties: false
 };
-export { forgotPasswordSchema };
+export { ForgotPasswordSchema };
 
 
-const changePasswordSchema = {
+const ChangePasswordSchema = {
     type: "object",
     properties: {
         password: {type: "string"}
@@ -31,4 +44,4 @@ const changePasswordSchema = {
     required: ["password"],
     additionalProperties: false
 };
-export { changePasswordSchema};
+export { ChangePasswordSchema };
