@@ -29,11 +29,11 @@ router.get('/get/:id', (req, res) => {
     });
 });
 
-router.get('/getbyuser/:id', (req, res) => {
+router.get('/getbyuser', validateJWT(), (req, res) => {
     BookExchange.find({
         $or: [
-            {participantOne: req.params.id},
-            {participantTwo: req.params.id}
+            {participantOne: req.userId},
+            {participantTwo: req.userId}
         ]
     }).then(exchanges => {
         res.json(exchanges);
@@ -115,7 +115,7 @@ router.post('/acceptTwo/:id', validateJWT(), (req, res) => {
             return;
         }
 
-        if(requestedBook.bookOwner != exchange.participantOne) {
+        if(requestedBook.bookOwner.toString() != exchange.participantOne.toString()) {
             res.status(400);
             res.json({
                 "reason": "Book Not Owned by Other Participant"
@@ -171,7 +171,11 @@ router.post('/acceptOne/:id', validateJWT(), (req, res) => {
         const doc = await BookExchange.findByIdAndUpdate(exchange._id,
             {
                 acceptedOne: true
-            });
+            },
+            {
+                new: true
+            }
+            );
         
         res.json(doc);
 
@@ -209,10 +213,10 @@ router.post('/confirmexchange/:id', validateJWT(), (req, res) => {
         let updateBody = {};
 
         if(exchange.participantOne.toString() == req.userId) {
-            updateBody["exchangeStatus"] = exchange.exchangeStatus & 1;
+            updateBody["exchangeStatus"] = exchange.exchangeStatus | 1;
         }
         else if(exchange.participantTwo.toString() == req.userId) {
-            updateBody["exchangeStatus"] = exchange.exchangeStatus & 2;
+            updateBody["exchangeStatus"] = exchange.exchangeStatus | 2;
         }
         else {
             res.sendStatus(401);
@@ -220,7 +224,7 @@ router.post('/confirmexchange/:id', validateJWT(), (req, res) => {
         }
 
         const doc = await BookExchange.findByIdAndUpdate(exchange._id,
-            updateBody);
+            updateBody, {new: true});
         
         res.json(doc);
 
@@ -258,10 +262,10 @@ router.post('/confirmread/:id', validateJWT(), (req, res) => {
         let updateBody = {};
 
         if(exchange.participantOne.toString() == req.userId) {
-            updateBody["readStatus"] = exchange.exchangeStatus & 1;
+            updateBody["readStatus"] = exchange.readStatus | 1;
         }
         else if(exchange.participantTwo.toString() == req.userId) {
-            updateBody["readStatus"] = exchange.exchangeStatus & 2;
+            updateBody["readStatus"] = exchange.readStatus | 2;
         }
         else {
             res.sendStatus(401);
@@ -269,7 +273,7 @@ router.post('/confirmread/:id', validateJWT(), (req, res) => {
         }
 
         const doc = await BookExchange.findByIdAndUpdate(exchange._id,
-            updateBody);
+            updateBody, {new: true});
         
         res.json(doc);
 
@@ -300,17 +304,20 @@ router.post('/confirmreexchange/:id', validateJWT(), (req, res) => {
         let updateBody = {};
 
         if(exchange.participantOne.toString() == req.userId) {
-            updateBody["reexchangeStatus"] = exchange.exchangeStatus & 1;
+            updateBody["reexchangeStatus"] = exchange.reexchangeStatus | 1;
         }
         else if(exchange.participantTwo.toString() == req.userId) {
-            updateBody["reexchangeStatus"] = exchange.exchangeStatus & 2;
+            updateBody["reexchangeStatus"] = exchange.reexchangeStatus | 2;
         }
         else {
             res.sendStatus(401);
             return;
         }
 
-        if(reexchangeStatus == 3) {
+        const doc = await BookExchange.findByIdAndUpdate(exchange._id,
+            updateBody, {new: true});
+
+        if(doc.reexchangeStatus == 3) {
             await User.updateMany({
                 $or: [
                     {_id: exchange.participantOne},
@@ -324,13 +331,13 @@ router.post('/confirmreexchange/:id', validateJWT(), (req, res) => {
 
             await User.findByIdAndUpdate(exchange.participantOne, {
                 $push: {
-                    exchangedBooks: exchange.bookTwo
+                    exchangedBooks: exchange.bookOne
                 }
             });
 
             await User.findByIdAndUpdate(exchange.participantTwo, {
                 $push: {
-                    exchangedBooks: exchange.bookOne
+                    exchangedBooks: exchange.bookTwo
                 }
             });
 
@@ -341,9 +348,6 @@ router.post('/confirmreexchange/:id', validateJWT(), (req, res) => {
             });
             return;
         }
-
-        const doc = await BookExchange.findByIdAndUpdate(exchange._id,
-            updateBody);
         
         res.json(doc);
 
