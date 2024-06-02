@@ -5,7 +5,7 @@ import ForgotPasswordModel from '../db_models/forgotpass_model.js';
 function scheduleJobs() {
     //Schedule Removing Stale Forgot Password Requests Once A Day
     console.log("Setting up Cron Jobs");
-    const removeStaleForgotPasswordRequestsJob = schedule.scheduleJob('* * * * *', () => {
+    const removeStaleForgotPasswordRequestsJob = schedule.scheduleJob('0 0 * * *', () => {
         if(mongoose.connection.readyState != 1) {
             console.log("Skipping Forgot Password Stale Job: Mongoose DB not Connected");
             return;

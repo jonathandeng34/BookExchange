@@ -29,11 +29,11 @@ router.get('/get/:id', (req, res) => {
     });
 });
 
-router.get('/getbyuser/:id', (req, res) => {
+router.get('/getbyuser', validateJWT(), (req, res) => {
     BookExchange.find({
         $or: [
-            {participantOne: req.params.id},
-            {participantTwo: req.params.id}
+            {participantOne: req.userId},
+            {participantTwo: req.userId}
         ]
     }).then(exchanges => {
         res.json(exchanges);
@@ -49,7 +49,7 @@ router.get('/getbyuser/:id', (req, res) => {
  * Selected Book ID
  */
 router.post('/createExchange', validateJWT(), (req, res) => {
-    Book.findById(req.body.bookId).then(book => {
+    Book.findById(req.body.bookId).then(async (book) => {
         if(!book) {
             res.status(404);
             res.json({
@@ -65,6 +65,18 @@ router.post('/createExchange', validateJWT(), (req, res) => {
             });
             return;
         }
+
+        if(book.isBookOutForExchange) {
+            res.status(400);
+            res.json({
+                "reason": "Book already Out for Exchange"
+            });
+            return;
+        }
+
+        await Book.findByIdAndUpdate(req.body.bookId, {
+            isBookOutForExchange: true
+        });
 
         const newExchange = new BookExchange({
             participantOne: req.userId,
@@ -115,10 +127,22 @@ router.post('/acceptTwo/:id', validateJWT(), (req, res) => {
             return;
         }
 
-        if(requestedBook.bookOwner != exchange.participantOne) {
+        await Book.findByIdAndUpdate(req.body.bookId, {
+            isBookOutForExchange: true
+        });
+
+        if(requestedBook.bookOwner.toString() != exchange.participantOne.toString()) {
             res.status(400);
             res.json({
                 "reason": "Book Not Owned by Other Participant"
+            });
+            return;
+        }
+
+        if(requestedBook.isBookOutForExchange) {
+            res.status(400);
+            res.json({
+                "reason": "Book already Out for Exchange"
             });
             return;
         }
@@ -171,7 +195,11 @@ router.post('/acceptOne/:id', validateJWT(), (req, res) => {
         const doc = await BookExchange.findByIdAndUpdate(exchange._id,
             {
                 acceptedOne: true
-            });
+            },
+            {
+                new: true
+            }
+            );
         
         res.json(doc);
 
@@ -209,10 +237,10 @@ router.post('/confirmexchange/:id', validateJWT(), (req, res) => {
         let updateBody = {};
 
         if(exchange.participantOne.toString() == req.userId) {
-            updateBody["exchangeStatus"] = exchange.exchangeStatus & 1;
+            updateBody["exchangeStatus"] = exchange.exchangeStatus | 1;
         }
         else if(exchange.participantTwo.toString() == req.userId) {
-            updateBody["exchangeStatus"] = exchange.exchangeStatus & 2;
+            updateBody["exchangeStatus"] = exchange.exchangeStatus | 2;
         }
         else {
             res.sendStatus(401);
@@ -220,7 +248,7 @@ router.post('/confirmexchange/:id', validateJWT(), (req, res) => {
         }
 
         const doc = await BookExchange.findByIdAndUpdate(exchange._id,
-            updateBody);
+            updateBody, {new: true});
         
         res.json(doc);
 
@@ -258,10 +286,10 @@ router.post('/confirmread/:id', validateJWT(), (req, res) => {
         let updateBody = {};
 
         if(exchange.participantOne.toString() == req.userId) {
-            updateBody["readStatus"] = exchange.exchangeStatus & 1;
+            updateBody["readStatus"] = exchange.readStatus | 1;
         }
         else if(exchange.participantTwo.toString() == req.userId) {
-            updateBody["readStatus"] = exchange.exchangeStatus & 2;
+            updateBody["readStatus"] = exchange.readStatus | 2;
         }
         else {
             res.sendStatus(401);
@@ -269,7 +297,7 @@ router.post('/confirmread/:id', validateJWT(), (req, res) => {
         }
 
         const doc = await BookExchange.findByIdAndUpdate(exchange._id,
-            updateBody);
+            updateBody, {new: true});
         
         res.json(doc);
 
@@ -300,17 +328,20 @@ router.post('/confirmreexchange/:id', validateJWT(), (req, res) => {
         let updateBody = {};
 
         if(exchange.participantOne.toString() == req.userId) {
-            updateBody["reexchangeStatus"] = exchange.exchangeStatus & 1;
+            updateBody["reexchangeStatus"] = exchange.reexchangeStatus | 1;
         }
         else if(exchange.participantTwo.toString() == req.userId) {
-            updateBody["reexchangeStatus"] = exchange.exchangeStatus & 2;
+            updateBody["reexchangeStatus"] = exchange.reexchangeStatus | 2;
         }
         else {
             res.sendStatus(401);
             return;
         }
 
-        if(reexchangeStatus == 3) {
+        const doc = await BookExchange.findByIdAndUpdate(exchange._id,
+            updateBody, {new: true});
+
+        if(doc.reexchangeStatus == 3) {
             await User.updateMany({
                 $or: [
                     {_id: exchange.participantOne},
@@ -324,15 +355,20 @@ router.post('/confirmreexchange/:id', validateJWT(), (req, res) => {
 
             await User.findByIdAndUpdate(exchange.participantOne, {
                 $push: {
-                    exchangedBooks: exchange.bookTwo
+                    exchangedBooks: exchange.bookOne
                 }
             });
 
             await User.findByIdAndUpdate(exchange.participantTwo, {
                 $push: {
-                    exchangedBooks: exchange.bookOne
+                    exchangedBooks: exchange.bookTwo
                 }
             });
+
+            if(!(await removeBooksFromExchange(req, res))) {
+                res.sendStatus(404);
+                return;
+            }
 
             await BookExchange.findByIdAndDelete(exchange._id);
 
@@ -341,9 +377,6 @@ router.post('/confirmreexchange/:id', validateJWT(), (req, res) => {
             });
             return;
         }
-
-        const doc = await BookExchange.findByIdAndUpdate(exchange._id,
-            updateBody);
         
         res.json(doc);
 
@@ -353,14 +386,61 @@ router.post('/confirmreexchange/:id', validateJWT(), (req, res) => {
     });
 });
 
-router.delete('/cancel/:id', (req, res) => {
-    BookExchange.deleteById(req.params.id).then(() => {
+router.delete('/cancel/:id', validateJWT(), async (req, res) => {
+
+    if(!(await isUserFromExchange(req, res))) {
+        res.sendStatus(401);
+    }
+
+    //First set the books to no longer in exchange
+    if(!(await removeBooksFromExchange(req, res))) {
+        res.sendStatus(404);
+        return;
+    }
+
+
+
+    BookExchange.findByIdAndDelete(req.params.id).then(async () => {
         res.sendStatus(200);
     }).catch(e => {
         console.log(e);
         res.sendStatus(400);
     });
 });
+
+async function removeBooksFromExchange(req, res) {
+    //First set the books to no longer in exchange
+
+    const exchange = await BookExchange.findById(req.params.id);
+    if(!exchange) {
+        return false;
+    }
+
+    const updateBody = {
+        isBookOutForExchange: false
+    }
+
+    await Book.findByIdAndUpdate(exchange.bookOne, updateBody);
+    if(exchange.bookTwo) {
+        await Book.findByIdAndUpdate(exchange.bookTwo, updateBody);
+    }
+
+    return true;
+}
+
+async function isUserFromExchange(req, res) {
+    const exchangeDoc = await BookExchange.findById(req.params.id);
+    if(!exchangeDoc) {
+        return false;
+    }
+    if(exchangeDoc.participantOne.toString() == req.userId) {
+        return true;
+    }
+    if(exchangeDoc.participantTwo.toString() == req.userId) {
+        return true;
+    }
+    return false;
+}
 
 
 

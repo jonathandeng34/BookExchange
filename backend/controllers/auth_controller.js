@@ -106,12 +106,17 @@ router.post('/login', validateSchema(LoginSchema), (req, res) => {
         bcrypt.compare(req.body.password, user.password).then(result => {
             if(result) {
                 let jwtToken = jwt.sign({
-                    time: new Date(),
+                    //time: new Date(),
+                    expiresIn: "3d",
                     userId: user._id
                 }, process.env.JWT_SECRET);
-                res.json({
-                    "token": "Bearer "+jwtToken
+                res.cookie("jwt", jwtToken, {
+                    maxAge: 3 * 24 * 60 * 60 * 1000,
+                    httpOnly: true,
+                    sameSite: "strict"
                 });
+                res.status(201);
+                res.send("Login Success");
             }
             else {
                 res.status(401);
