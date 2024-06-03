@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 import User from '../db_models/user_model.js'
 import validateJWT from '../security/validate_jwt.js'
 import Message from '../db_models/message_model.js'
+import { io, userSocketId } from '../socket.js'
 
 const router = express.Router();
 
@@ -30,6 +31,8 @@ router.get('/:id', validateJWT(), async (req, res) => {
                     { recipientID: new mongoose.Types.ObjectId(req.params.id) }
                 ]
             });
+
+
             res.status(200);
             res.json(messageHistory);
             return;
@@ -71,6 +74,12 @@ router.post('/send/:id', validateJWT(), async (req, res) => {
                 recipientID: req.params.id,
                 content: req.body.content,
             });
+
+            const recvSocket = userSocketId(req.params.id);
+            if (recvSocket) {
+                io.to(recvSocket).emit("message", newMessage);
+            }
+
             newMessage.save().then(doc => {
                 res.json(doc);
             });

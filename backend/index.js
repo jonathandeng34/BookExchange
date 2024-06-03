@@ -12,11 +12,11 @@ import scheduleJobs from './cron/cron_jobs.js'
 import { AuthController } from './controllers/auth_controller.js'
 import { BookExchangeController } from './controllers/book_exchange_controller.js'
 import { MessageController } from './controllers/message_controller.js'
+import { app, server } from './socket.js'
 
 
 
 const port = process.env.PORT || 5000;
-const app = express()
 app.use(cookieParser())
 
 connectDB()
@@ -94,7 +94,7 @@ mongoose.connection.once('open', () => {
     // GENERATE DUMMY DATA
 //    generateDummyData();
 
-    app.listen(port, () => {
+    server.listen(port, () => {
         console.log("Server started on port " + port);
         //Cron Jobs
         scheduleJobs();    
