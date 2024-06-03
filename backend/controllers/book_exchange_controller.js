@@ -4,6 +4,7 @@ import User from '../db_models/user_model.js'
 import Book from '../db_models/book_model.js'
 import BookExchange from '../db_models/book_exchange_model.js'
 import validateJWT from '../security/validate_jwt.js'
+import { isIDValid, validateID } from '../frontend_models/validate_schema.js'
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ Confirm Finished Reading
 Confirm Re-Exchange
 */
 
-router.get('/get/:id', (req, res) => {
+router.get('/get/:id', validateID(), (req, res) => {
     BookExchange.findById(req.params.id).then(bookExchange => {
         if(!bookExchange) {
             res.status(404);
@@ -49,6 +50,12 @@ router.get('/getbyuser', validateJWT(), (req, res) => {
  * Selected Book ID
  */
 router.post('/createExchange', validateJWT(), (req, res) => {
+
+    if(!isIDValid(req.body.bookId)) {
+        res.status(400).send("Invalid Book ID");
+        return;
+    }
+
     Book.findById(req.body.bookId).then(async (book) => {
         if(!book) {
             res.status(404);
@@ -95,7 +102,13 @@ router.post('/createExchange', validateJWT(), (req, res) => {
     })
 });
 
-router.post('/acceptTwo/:id', validateJWT(), (req, res) => {
+router.post('/acceptTwo/:id', validateID(), validateJWT(), (req, res) => {
+
+    if(!isIDValid(req.body.bookId)) {
+        res.status(400).send("Invalid Book ID");
+        return;
+    }
+
     BookExchange.findById(req.params.id).then(async (exchange) => {
         if(!exchange) {
             res.status(404);
@@ -161,7 +174,7 @@ router.post('/acceptTwo/:id', validateJWT(), (req, res) => {
     });
 });
 
-router.post('/acceptOne/:id', validateJWT(), (req, res) => {
+router.post('/acceptOne/:id', validateID(), validateJWT(), (req, res) => {
     BookExchange.findById(req.params.id).then(async (exchange) => {
         if(!exchange) {
             res.status(404);
@@ -209,7 +222,7 @@ router.post('/acceptOne/:id', validateJWT(), (req, res) => {
     });
 });
 
-router.post('/confirmexchange/:id', validateJWT(), (req, res) => {
+router.post('/confirmexchange/:id', validateID(), validateJWT(), (req, res) => {
     BookExchange.findById(req.params.id).then(async (exchange) => {
         if(!exchange) {
             res.status(404);
@@ -258,7 +271,7 @@ router.post('/confirmexchange/:id', validateJWT(), (req, res) => {
     });
 });
 
-router.post('/confirmread/:id', validateJWT(), (req, res) => {
+router.post('/confirmread/:id', validateID(), validateJWT(), (req, res) => {
     BookExchange.findById(req.params.id).then(async (exchange) => {
         if(!exchange) {
             res.status(404);
@@ -307,7 +320,7 @@ router.post('/confirmread/:id', validateJWT(), (req, res) => {
     });
 });
 
-router.post('/confirmreexchange/:id', validateJWT(), (req, res) => {
+router.post('/confirmreexchange/:id', validateID(), validateJWT(), (req, res) => {
     BookExchange.findById(req.params.id).then(async (exchange) => {
         if(!exchange) {
             res.status(404);
@@ -386,7 +399,7 @@ router.post('/confirmreexchange/:id', validateJWT(), (req, res) => {
     });
 });
 
-router.delete('/cancel/:id', validateJWT(), async (req, res) => {
+router.delete('/cancel/:id', validateID() ,validateJWT(), async (req, res) => {
 
     if(!(await isUserFromExchange(req, res))) {
         res.sendStatus(401);

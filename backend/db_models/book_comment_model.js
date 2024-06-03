@@ -21,6 +21,12 @@ const BookCommentSchema = new mongoose.Schema({
         required: true,
         minlength: 1,
         trim: true
+    },
+    starRating:  {
+        type: Number,
+        required: true,
+        min: 1,
+        max: 5
     }
 });
 

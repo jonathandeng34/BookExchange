@@ -4,6 +4,7 @@ import Book from '../db_models/book_model.js';
 import { distance as editDistance } from 'fastest-levenshtein'
 import User from '../db_models/user_model.js';
 import validateJWT from '../security/validate_jwt.js';
+import { isIDValid, validateID } from '../frontend_models/validate_schema.js';
 import BookComment from '../db_models/book_comment_model.js';
 
 const router = express.Router();
@@ -56,7 +57,7 @@ and posting of book information.
  * Replaces the bookOwner field in the database document from the owner's
  * Object ID to an object with the owner's Object ID, username, and user rating.
  */
-router.get('/get/:id', (req, res) => {
+router.get('/get/:id', validateID(), (req, res) => {
     Book.findOne({
         _id: req.params.id
     }).populate('bookOwner', '_id username userRating').then((book) => {
@@ -75,7 +76,7 @@ router.get('/get/:id', (req, res) => {
  * Takes in a User ID as a parameter and gives all books that are owned by that user.
  * Replaces the bookOwner Object ID with more information about the user.
  */
-router.get('/ownedby/:id', (req, res) => {
+router.get('/ownedby/:id', validateID(), (req, res) => {
     Book.find({
         bookOwner: req.params.id
     }).populate('bookOwner', '_id username userRating').then((books) => {
@@ -105,33 +106,6 @@ router.get('/ownedby/:id', (req, res) => {
 });
 
 */
-
-
-/*adds star rating to a book*/
-router.post('/rate/:id', (req, res) => {
-    const bookId = req.params.id;
-    const { starRating } = req.body;
-
-    //ensures that the star rating is between 1 and 5
-    if (typeof starRating !== 'number' || starRating < 1 || starRating > 5) {
-        return res.status(400).send("Star rating must be a number between 1 and 5.");
-    }
-
-    //find the book and update the starRating
-    Book.findOneAndUpdate(
-        { _id: bookId },
-        { starRating: starRating },
-        { new: true }
-    ).then((book) => {
-        if (!book) {
-            return res.status(404).send("Book Not Found!");
-        }
-        res.json({ message: "Star rating updated successfully", book });
-    }).catch((e) => {
-        console.log(e);
-        res.status(500).send("Internal Server Error");
-    });
-});
 
 
 /**
@@ -235,7 +209,7 @@ router.post('/search', (req, res) => {
     })
 });
 
-router.get('/comments/:id', (req, res) => {
+router.get('/comments/:id', validateID(), (req, res) => {
     BookComment.find({
         bookId: req.params.id
     }).populate('userId', '_id username').then(comments => {
@@ -251,24 +225,33 @@ router.get('/comments/:id', (req, res) => {
  * Expected JSON:
  * Comment Text
  * Star Rating (between 1 and 5)
- * ID is the Book ID
  */
-router.post('/comment/:id', validateJWT(), async (req, res) => {
+router.post('/comment/:id', validateID(), validateJWT(), async (req, res) => {
 
     if(req.body.starRating < 1 || req.body.starRating > 5) {
-        res.sendStatus(400);
+        res.send("Book Star Rating must be between 1 and 5!");
+        res.status(400);
+        return;
     }
 
     User.findById(req.userId).then(async (user) => {
         if(!user) {
-            res.sendStatus(401);
+            res.status(401);
+            res.send("Invalid User");
+            return;
+        }
+
+        const book = await Book.findById(req.params.id);
+        if(!book) {
+            res.status(401);
+            res.send("Invalid Book");
             return;
         }
 
         let exchangedBookStrings = user.exchangedBooks.map(el => el.toString());
         if(!exchangedBookStrings.includes(req.params.id)) {
             //The user hasn't exchanged for this book yet, so they can't send a comment
-            req.sendStatus(401);
+            res.sendStatus(401);
             return;
         }
 

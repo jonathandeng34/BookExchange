@@ -5,7 +5,7 @@ import sendMail from '../config/email_service.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
-import validateSchema from '../frontend_models/validate_schema.js';
+import validateSchema, { validateID } from '../frontend_models/validate_schema.js';
 import { LoginSchema } from '../frontend_models/auth_schemas.js';
 import ForgotPasswordModel from '../db_models/forgotpass_model.js';
 
@@ -113,7 +113,8 @@ router.post('/login', validateSchema(LoginSchema), (req, res) => {
                 res.cookie("jwt", jwtToken, {
                     maxAge: 3 * 24 * 60 * 60 * 1000,
                     httpOnly: true,
-                    sameSite: "strict"
+                    sameSite: "lax",
+                    secure: true
                 });
                 res.status(201);
                 res.send("Login Success");
@@ -160,9 +161,9 @@ router.post('/forgotpassword/request', (req, res) => {
     });
 });
 
-router.get('/forgotpassword/check_code/:code', (req, res) => {
+router.get('/forgotpassword/check_code/:id', validateID(), (req, res) => {
 
-    ForgotPasswordModel.findById(req.params.code).then(forgotReq => {
+    ForgotPasswordModel.findById(req.params.id).then(forgotReq => {
         if(!forgotReq) {
             res.status(404);
             res.send("Invalid Forgot Password Code");
@@ -179,9 +180,9 @@ router.get('/forgotpassword/check_code/:code', (req, res) => {
 /**JSON
  * Password
  */
-router.post('/forgotpassword/change_password/:code', (req, res) => {
+router.post('/forgotpassword/change_password/:id', validateID(), (req, res) => {
 
-    ForgotPasswordModel.findById(req.params.code).then(forgotReq => {
+    ForgotPasswordModel.findById(req.params.id).then(forgotReq => {
         if(!forgotReq) {
             res.status(404);
             res.send("Invalid Forgot Password Code");
