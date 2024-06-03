@@ -11,12 +11,13 @@ import { UserController } from './controllers/user_controller.js'
 import scheduleJobs from './cron/cron_jobs.js';
 import { AuthController } from './controllers/auth_controller.js'
 import { BookExchangeController } from './controllers/book_exchange_controller.js';
-
+import cors from 'cors';
 
 
 const port = process.env.PORT || 5000;
 const app = express()
 app.use(cookieParser())
+app.use(cors())
 
 connectDB()
 
