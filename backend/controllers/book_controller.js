@@ -7,6 +7,44 @@ import validateJWT from '../security/validate_jwt.js';
 
 const router = express.Router();
 
+
+const withinDistance = (query, name, editDistance) => {
+    return editDistance <= parseInt(process.env.MAXIMUM_EDIT_DISTANCE) 
+    || isSubset(query, name);
+}
+
+const isSubset = (query, name) => {
+    return name.toLowerCase().includes(query.toLowerCase());
+}
+
+//Calculate the Damerau-Levenshtein distance between two strings (I have no clue how this works)
+const calculateDistance = (str1, str2) => {
+    let distanceMatrix = [];
+    for (let i = 0; i <= str2.length; i++) {
+        let row = [i];
+        distanceMatrix.push(row);
+    }
+    let firstRow = distanceMatrix[0];
+    for (let j = 0; j <= str1.length; j++) {
+        firstRow.push(j);
+    }
+    for (let i = 1; i <= str2.length; i++) {
+        for (let j = 1; j <= str1.length; j++) {
+            if (str2.charAt(i-1) == str1.charAt(j-1)) {
+                distanceMatrix[i][j] = distanceMatrix[i-1][j-1];
+            } else {
+                distanceMatrix[i][j] = Math.min(distanceMatrix[i-1][j-1] + 1, // substitution
+                                                distanceMatrix[i][j-1] + 1, // insertion
+                                                distanceMatrix[i-1][j] + 1); // deletion
+            }
+            if (i > 1 && j > 1 && str2.charAt(i-1) == str1.charAt(j-2) && str2.charAt(i-2) == str1.charAt(j-1)) {
+                distanceMatrix[i][j] = Math.min(distanceMatrix[i][j], distanceMatrix[i-2][j-2] + 1); // transposition
+            }
+        }
+    }
+    return distanceMatrix[str2.length][str1.length];
+}
+
 /*
 This controller manages all endpoints that have to do with the retrieval
 and posting of book information.
@@ -174,14 +212,21 @@ router.get('/search', (req, res) => {
         }
 
         for (let book of books) {
-            book['editDistance'] = editDistance(req.body.searchQuery, book['title'])
+            book['editDistance'] = calculateDistance(req.body.searchQuery, book['title']);
+            book['shouldKeep'] = withinDistance(req.body.searchQuery, book['title'], book['editDistance']);
         }
         //console.log(books)
 
         //Next, let's filter out books above a certain edit distance threshold and then sort
         // the remaining in ascending order by edit distance
-        const finalList = books.filter(book => (book['editDistance'] <= parseInt(process.env.MAXIMUM_EDIT_DISTANCE)))
-            .sort((book1, book2) => book1['editDistance']-book2['editDistance'])
+        const finalList = books.filter(book => book['shouldKeep'])
+            .sort((book1, book2) => {
+                let one = isSubset(req.body.searchQuery, book1["title"]);
+                let two = isSubset(req.body.searchQuery, book2["title"]);
+                if(one && !two) return -1;
+                else if(two && !one) return 1;
+                return (book1['editDistance'] - book2['editDistance']);
+            })
         
         //Send over the final list of filtered books!
         res.send(finalList)
