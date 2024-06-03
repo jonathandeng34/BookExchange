@@ -5,8 +5,10 @@ import sendMail from '../config/email_service.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
+
 import validateSchema, { validateID } from '../frontend_models/validate_schema.js';
-import { LoginSchema } from '../frontend_models/auth_schemas.js';
+import { LoginSchema, RegisterSchema, ForgotPasswordSchema, ChangePasswordSchema } from '../frontend_models/auth_schemas.js';
+
 import ForgotPasswordModel from '../db_models/forgotpass_model.js';
 
 const router = express.Router();
@@ -17,7 +19,7 @@ const router = express.Router();
  * Username
  * Password
  */
-router.post('/register', async (req, res) => {
+router.post('/register', validateSchema(RegisterSchema), async (req, res) => {
     //Make sure the given email is a g.ucla.edu email
 
     let domainName = req.body.email.split('@')[1];
@@ -132,7 +134,7 @@ router.post('/login', validateSchema(LoginSchema), (req, res) => {
  * Expected JSON:
  * Email
  */
-router.post('/forgotpassword/request', (req, res) => {
+router.post('/forgotpassword/request', validateSchema(ForgotPasswordSchema), (req, res) => {
     User.findOne({
         email: req.body.email
     }).then(user => {
@@ -180,7 +182,7 @@ router.get('/forgotpassword/check_code/:id', validateID(), (req, res) => {
 /**JSON
  * Password
  */
-router.post('/forgotpassword/change_password/:id', validateID(), (req, res) => {
+router.post('/forgotpassword/change_password/:id', validateSchema(ChangePasswordSchema), validateID(), (req, res) => {
 
     ForgotPasswordModel.findById(req.params.id).then(forgotReq => {
         if(!forgotReq) {

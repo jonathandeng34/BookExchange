@@ -6,18 +6,13 @@ import BookExchange from '../db_models/book_exchange_model.js'
 import validateJWT from '../security/validate_jwt.js'
 import { isIDValid, validateID } from '../frontend_models/validate_schema.js'
 
+import validateSchema from '../frontend_models/validate_schema.js'
+
+import { CreateExchangeSchema, AcceptTwoSchema } from '../frontend_models/book_exchange_schemas.js';
+
 const router = express.Router();
 
-/*
-Endpoints Needed:
-Get Book Exchanges by User ID
-Start Book Exchange
-Choose Offer on Requested Exchange
-Accept Full Exchange
-Confirm Exchange
-Confirm Finished Reading
-Confirm Re-Exchange
-*/
+
 
 router.get('/get/:id', validateID(), (req, res) => {
     BookExchange.findById(req.params.id).then(bookExchange => {
@@ -49,8 +44,8 @@ router.get('/getbyuser', validateJWT(), (req, res) => {
  * JSON:
  * Selected Book ID
  */
-router.post('/createExchange', validateJWT(), (req, res) => {
-
+router.post('/createExchange', validateSchema(CreateExchangeSchema), validateJWT(), (req, res) => {
+    
     if(!isIDValid(req.body.bookId)) {
         res.status(400).send("Invalid Book ID");
         return;
@@ -102,8 +97,13 @@ router.post('/createExchange', validateJWT(), (req, res) => {
     })
 });
 
-router.post('/acceptTwo/:id', validateID(), validateJWT(), (req, res) => {
-
+/*
+First User Requests an Exchange
+Second User Accepts Exchange, States the book they want in return
+Expected JSON: bookId, type: string
+*/
+router.post('/acceptTwo/:id', validateSchema(AcceptTwoSchema), validateID(), validateJWT(), (req, res) => {
+    
     if(!isIDValid(req.body.bookId)) {
         res.status(400).send("Invalid Book ID");
         return;

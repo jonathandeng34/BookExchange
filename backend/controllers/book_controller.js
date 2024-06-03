@@ -7,6 +7,9 @@ import validateJWT from '../security/validate_jwt.js';
 import { isIDValid, validateID } from '../frontend_models/validate_schema.js';
 import BookComment from '../db_models/book_comment_model.js';
 
+import validateSchema from '../frontend_models/validate_schema.js';
+import { UploadBookSchema, SearchSchema, BookCommentSchema } from '../frontend_models/book_schemas.js';
+
 const router = express.Router();
 
 
@@ -116,7 +119,7 @@ router.get('/ownedby/:id', validateID(), (req, res) => {
  * Title, Author, Genre
  */
 //TODO: Replace the Hardcoded User with the User Encoded in JWT Token
-router.post('/upload', validateJWT(), (req, res) => {
+router.post('/upload', validateSchema(UploadBookSchema), validateJWT(), (req, res) => {
     let newBook = new Book({
         title: req.body.title,
         author: req.body.author,
@@ -168,7 +171,7 @@ router.delete('/:id', validateJWT(), (req, res) => {
  * genreFilter is optional. If it isn't provided, genre isn't taken into account in the filter
  * If searchQuery is empty or all whitespace, we'll just return all books
  */
-router.post('/search', (req, res) => {
+router.get('/search', validateSchema(SearchSchema), (req, res) => {
     //First, let's get all the books that match a particular genre
     //If genreFilter isn't present, ignore this filter
     Book.find((req.body.genreFilter) ? {
@@ -226,7 +229,7 @@ router.get('/comments/:id', validateID(), (req, res) => {
  * Comment Text
  * Star Rating (between 1 and 5)
  */
-router.post('/comment/:id', validateID(), validateJWT(), async (req, res) => {
+router.post('/comment/:id', validateSchema(BookCommentSchema), validateID(), validateJWT(), async (req, res) => {
 
     if(req.body.starRating < 1 || req.body.starRating > 5) {
         res.send("Book Star Rating must be between 1 and 5!");
