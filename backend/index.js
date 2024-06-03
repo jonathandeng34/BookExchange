@@ -17,7 +17,10 @@ import cors from 'cors';
 const port = process.env.PORT || 5000;
 const app = express()
 app.use(cookieParser())
-app.use(cors())
+app.use(cors({
+    credentials: true,
+    origin: process.env.FRONTEND_ORIGIN
+}))
 
 connectDB()
 

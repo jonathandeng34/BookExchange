@@ -4,6 +4,7 @@ import Book from '../db_models/book_model.js';
 import { distance as editDistance } from 'fastest-levenshtein'
 import User from '../db_models/user_model.js';
 import validateJWT from '../security/validate_jwt.js';
+import BookComment from '../db_models/book_comment_model.js';
 
 const router = express.Router();
 
@@ -193,7 +194,7 @@ router.delete('/:id', validateJWT(), (req, res) => {
  * genreFilter is optional. If it isn't provided, genre isn't taken into account in the filter
  * If searchQuery is empty or all whitespace, we'll just return all books
  */
-router.get('/search', (req, res) => {
+router.post('/search', (req, res) => {
     //First, let's get all the books that match a particular genre
     //If genreFilter isn't present, ignore this filter
     Book.find((req.body.genreFilter) ? {
@@ -231,6 +232,67 @@ router.get('/search', (req, res) => {
         //Send over the final list of filtered books!
         res.send(finalList)
 
+    })
+});
+
+router.get('/comments/:id', (req, res) => {
+    BookComment.find({
+        bookId: req.params.id
+    }).populate('userId', '_id username').then(comments => {
+        res.send(comments);
+    })
+    .catch(e => {
+        console.log(e);
+        res.sendStatus(500);
+    })
+});
+
+/**
+ * Expected JSON:
+ * Comment Text
+ * Star Rating (between 1 and 5)
+ * ID is the Book ID
+ */
+router.post('/comment/:id', validateJWT(), async (req, res) => {
+
+    if(req.body.starRating < 1 || req.body.starRating > 5) {
+        res.sendStatus(400);
+    }
+
+    User.findById(req.userId).then(async (user) => {
+        if(!user) {
+            res.sendStatus(401);
+            return;
+        }
+
+        let exchangedBookStrings = user.exchangedBooks.map(el => el.toString());
+        if(!exchangedBookStrings.includes(req.params.id)) {
+            //The user hasn't exchanged for this book yet, so they can't send a comment
+            req.sendStatus(401);
+            return;
+        }
+
+        //Delete any old comment
+        await BookComment.deleteOne({
+            userId: req.userId,
+            bookId: req.params.id
+        });
+
+        const newComment = new BookComment({
+            userId: req.userId,
+            bookId: req.params.id,
+            commentText: req.body.text,
+            starRating: req.body.starRating
+        });
+
+        newComment.save().then(doc => {
+            res.sendStatus(200);
+        });
+
+    })
+    .catch(e => {
+        console.log(e);
+        res.sendStatus(500);
     })
 });
 
