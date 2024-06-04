@@ -18,7 +18,9 @@ router.get('/get/:id', validateID(), (req, res) => {
     BookExchange.findById(req.params.id).then(bookExchange => {
         if(!bookExchange) {
             res.status(404);
-            res.send("No Such Book Exchange Found");
+            res.json({
+                "reason": "No Such Book Exchange Found"
+            });
             return;
         }
         res.json(bookExchange);
@@ -36,7 +38,7 @@ router.get('/getbyuser', validateJWT(), (req, res) => {
     })
     .catch(e => {
         console.log(e);
-        res.setStatus(500);
+        res.sendStatus(500);
     })
 });
 
@@ -47,7 +49,9 @@ router.get('/getbyuser', validateJWT(), (req, res) => {
 router.post('/createExchange', validateSchema(CreateExchangeSchema), validateJWT(), (req, res) => {
     
     if(!isIDValid(req.body.bookId)) {
-        res.status(400).send("Invalid Book ID");
+        res.status(400).json({
+            "reason": "Invalid Book ID"
+        });
         return;
     }
 
@@ -127,7 +131,10 @@ router.post('/acceptTwo/:id', validateSchema(AcceptTwoSchema), validateID(), val
         }
 
         if(exchange.participantTwo.toString() != req.userId) {
-            res.sendStatus(401);
+            res.status(400);
+            res.json({
+                "reason": "Unauthorized for Given Action"
+            });
             return;
         }
         
@@ -201,7 +208,10 @@ router.post('/acceptOne/:id', validateID(), validateJWT(), (req, res) => {
         }
 
         if(exchange.participantOne.toString() != req.userId) {
-            res.sendStatus(401);
+            res.status(400);
+            res.json({
+                "reason": "Unauthorized for Given Action"
+            });
             return;
         }
 
@@ -256,7 +266,10 @@ router.post('/confirmexchange/:id', validateID(), validateJWT(), (req, res) => {
             updateBody["exchangeStatus"] = exchange.exchangeStatus | 2;
         }
         else {
-            res.sendStatus(401);
+            res.status(400);
+            res.json({
+                "reason": "Unauthorized for Given Action"
+            });
             return;
         }
 
@@ -305,7 +318,10 @@ router.post('/confirmread/:id', validateID(), validateJWT(), (req, res) => {
             updateBody["readStatus"] = exchange.readStatus | 2;
         }
         else {
-            res.sendStatus(401);
+            res.status(400);
+            res.json({
+                "reason": "Unauthorized for Given Action"
+            });
             return;
         }
 
@@ -347,7 +363,10 @@ router.post('/confirmreexchange/:id', validateID(), validateJWT(), (req, res) =>
             updateBody["reexchangeStatus"] = exchange.reexchangeStatus | 2;
         }
         else {
-            res.sendStatus(401);
+            res.status(400);
+            res.json({
+                "reason": "Unauthorized for Given Action"
+            });
             return;
         }
 
@@ -402,7 +421,10 @@ router.post('/confirmreexchange/:id', validateID(), validateJWT(), (req, res) =>
 router.delete('/cancel/:id', validateID() ,validateJWT(), async (req, res) => {
 
     if(!(await isUserFromExchange(req, res))) {
-        res.sendStatus(401);
+        res.status(400);
+            res.json({
+                "reason": "Unauthorized for Given Action"
+        });
     }
 
     //First set the books to no longer in exchange

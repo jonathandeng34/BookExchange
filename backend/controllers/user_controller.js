@@ -32,13 +32,15 @@ router.get('/get/:id', validateID(), (req, res) => {
         _id: req.params.id
     }).select('_id username userRating').then((user) => {
         if (!user) {
-            res.status(404).send("User Not Found!");
+            res.status(404).json({
+                "reason": "User Not Found!"
+            });
             return;
         }
         res.json(user);
     }).catch((e) => {
         console.log(e);
-        res.status(500).send("Internal Server Error");
+        res.sendStatus(500);
     });
 });
 
@@ -48,7 +50,9 @@ router.get('/recommendation', validateJWT(), (req, res) => {
     .then(async (user) => {
         if(!user) {
             res.status(404);
-            res.send("Unable to find User in Database");
+            res.json({
+                "reason": "Unable to find User in Database"
+            });
             return;
         }
 

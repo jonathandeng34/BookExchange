@@ -55,6 +55,15 @@ This controller manages all endpoints that have to do with the retrieval
 and posting of book information.
 */
 
+router.get('/all', (req, res) => {
+    Book.find({}).then(books => {
+        res.send(books);
+    }).catch(e => {
+        console.log(e);
+        res.sendStatus(500);
+    });
+});
+
 /**
  * Takes in the Object ID of a book and returns a JSON object of that book.
  * Replaces the bookOwner field in the database document from the owner's
@@ -66,7 +75,9 @@ router.get('/get/:id', validateID(), (req, res) => {
     }).populate('bookOwner', '_id username userRating').then((book) => {
         if(!book) {
             res.status(404);
-            res.send("Book Not Found!");
+            res.json({
+                "reason": "Book Not Found!"
+            });
         }
         res.send(book);
     }).catch((e) => {
@@ -140,13 +151,16 @@ router.delete('/:id', validateJWT(), (req, res) => {
         }
         if(book.isBookOutForExchange) {
             res.status(400);
-            res.send({
+            res.json({
                 "reason": "Book Out for Exchange"
             });
         }
 
         if(book.bookOwner.toString() != req.userId) {
-            res.sendStatus(401);
+            res.status(400);
+            res.json({
+                "reason": "Unauthorized for Given Exchange"
+            });
             return;
         }
 
@@ -232,29 +246,38 @@ router.get('/comments/:id', validateID(), (req, res) => {
 router.post('/comment/:id', validateSchema(BookCommentSchema), validateID(), validateJWT(), async (req, res) => {
 
     if(req.body.starRating < 1 || req.body.starRating > 5) {
-        res.send("Book Star Rating must be between 1 and 5!");
+        res.json({
+            "reason": "Book Star Rating must be between 1 and 5!"
+        });
         res.status(400);
         return;
     }
 
     User.findById(req.userId).then(async (user) => {
         if(!user) {
-            res.status(401);
-            res.send("Invalid User");
+            res.status(400);
+            res.json({
+                "reason": "Invalid User"
+            });
             return;
         }
 
         const book = await Book.findById(req.params.id);
         if(!book) {
-            res.status(401);
-            res.send("Invalid Book");
+            res.status(400);
+            res.json({
+                "reason": "Invalid Book"
+            });
             return;
         }
 
         let exchangedBookStrings = user.exchangedBooks.map(el => el.toString());
         if(!exchangedBookStrings.includes(req.params.id)) {
             //The user hasn't exchanged for this book yet, so they can't send a comment
-            res.sendStatus(401);
+            res.status(400);
+            res.json({
+                "reason": "You haven't exchanged for this book yet!"
+            });
             return;
         }
 
