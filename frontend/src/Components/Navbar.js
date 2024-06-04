@@ -1,10 +1,19 @@
 import { Link } from "react-router-dom";
+import Endpoints from "../Endpoints";
 import Button from '@mui/material/Button';
 
 
 
-export function Navbar()
+export function Navbar(props)
 {
+
+    const logOut = () => {
+        Endpoints.doLogout().then(() => {
+            props.setLoggedIn(false);
+        });
+    };
+
+
     return (
 
         <>
@@ -14,11 +23,18 @@ export function Navbar()
                       Home
                 </Button> 
             </Link>
-            <Link to="/Login"> 
+            {!props.loggedIn ? (<Link to="/Login"> 
                 <Button variant="contained"> 
-                    Log In 
-                </Button> 
-            </Link>
+                    Log In
+                </Button>
+            </Link>)
+            :
+            (
+                <Button variant="contained" onClick={logOut}>
+                    Log Out
+                </Button>
+            )
+            }
             <Link to="/BookInformation">
                 <Button variant="contained"> 
                     Book Information Page

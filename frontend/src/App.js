@@ -23,14 +23,15 @@ function App() {
 
 
   const [text, setText] = useState('')
+  const [loggedIn, setLoggedIn] = useState(false);
 
   return (
   <>
     <Router>
       <Routes>
-        <Route element={<Layout/>}> 
+        <Route element={<Layout loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>}> 
           <Route path="/" element={<Home/>}/>
-          <Route path="/Login" element={<Login/>}/>
+          <Route path="/Login" element={<Login setLoggedIn={setLoggedIn}/>}/>
           <Route path="/BookInformation" element = {<BookInformation/>}/>
           <Route path="/Catalog" element = {<Catalog/>}/>
           <Route path="/CreateAccount" element = {<CreateAccount/>}/>

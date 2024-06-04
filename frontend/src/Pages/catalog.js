@@ -1,20 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, InputAdornment, IconButton, Grid, Typography, MenuItem } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import BookIcon from '@mui/icons-material/Book';
+import { Snackbar } from '@mui/material';
 import '../index.css'; // Assuming the CSS file is named styles.css
+import Endpoints from '../Endpoints';
 
 export function Catalog() {
     // State for search query and selected genre
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedGenre, setSelectedGenre] = useState('');
+    const [books, setBooks] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [snackbarText, setSnackbarText]  = useState("");
 
-    // Dummy book data (replace with your actual book data)
-    const books = [
-        { title: 'Book 1', author: 'Author 1', genre: 'Fiction' },
-        { title: 'Book 2', author: 'Author 2', genre: 'Mystery' },
-        { title: 'Book 3', author: 'Author 3', genre: 'Science Fiction' }
-    ];
+    useEffect(() => {
+        Endpoints.doGetBooks().then(response => {
+            if(!response.ok) {
+                throw "Response Failure"
+            }
+            return response.json();
+        }).then(json => {
+            setBooks(json);
+        }).catch(e => {
+            console.log(e);
+            setSnackbarText("Server Unable to Send Book Data");
+            setOpen(true);
+        });
+    }, [])
 
     // Filter books based on search query and selected genre
     const filteredBooks = books.filter(book =>
@@ -79,6 +92,12 @@ export function Catalog() {
                     </Grid>
                 ))}
             </Grid>
+            <Snackbar
+                    open={open}
+                    autoHideDuration={60000}
+                    onClose={() => setOpen(false)}
+                    message={snackbarText}
+                />
         </div>
     );
 }

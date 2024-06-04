@@ -19,10 +19,10 @@ const styles = {
   },
 };
 
-export function Layout() {
+export function Layout(props) {
   return (
     <div style={styles.app}>
-      <Navbar />
+      <Navbar loggedIn={props.loggedIn} setLoggedIn={props.setLoggedIn} />
       <Container component="main" style={styles.main}>
         <Outlet />
       </Container>

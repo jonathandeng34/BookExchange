@@ -23,11 +23,12 @@ const theme = createTheme();
 
 
 //Login component
-export function Login() {
+export function Login(props) {
 
     const navigate = useNavigate(); // Use useNavigate instead of useHistory
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
+    const [snackbarText, setSnackbarText] = useState("");
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -52,26 +53,31 @@ export function Login() {
             if (!response.ok)
             {
                 let errorText = await response.text();
-                throw errorText;
+                try {
+                    let errorJson = JSON.parse(errorText);
+                    if(!errorJson["reason"]) {
+                        throw "Not a human readable error";
+                    }
+                    setSnackbarText(errorJson["reason"]);
+                    setOpen(true);
+                    setLoading(false);
+                    return;
+                }
+                catch(e) {
+                    throw errorText;
+                }
+                
             }
+            props.setLoggedIn(true);
             navigate('/');
         }).catch(
-            err => {console.log(err)}
-            )
-            
-
-
-
-
-        
-
-        /*
-        // Mock API call
-        setTimeout(() => {
-            setLoading(false);
-            setOpen(true);
-        }, 2000);
-        */
+            err => {
+                setSnackbarText("Internal Error");
+                setOpen(true);
+                console.log(err);
+                setLoading(false);
+            }
+        )
     };
 
     return (
@@ -135,7 +141,7 @@ export function Login() {
                     open={open}
                     autoHideDuration={6000}
                     onClose={() => setOpen(false)}
-                    message="Logged in successfully!"
+                    message={snackbarText}
                 />
             </Container>
         </ThemeProvider>
