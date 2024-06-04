@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, InputAdornment, IconButton, Grid, Typography, MenuItem } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import BookIcon from '@mui/icons-material/Book';
 import { Snackbar } from '@mui/material';
 import '../index.css'; // Assuming the CSS file is named styles.css
 import Endpoints from '../Endpoints';
 import { useNavigate } from 'react-router-dom';
+import { BookImage } from '../Components/BookImage.js';
 
 export function Catalog() {
     // State for search query and selected genre
@@ -86,7 +86,8 @@ export function Catalog() {
                 {filteredBooks.map((book, index) => (
                     <Grid item xs={4} key={index}>
                         <div className="book-container" onClick={() => { navigate('/BookInformation/'+book._id); }}>
-                            <BookIcon fontSize="large" />
+                            {/*<BookIcon fontSize="large" />*/}
+                            <BookImage book={book}/>
                             <Typography variant="h6">{book.title}</Typography>
                             <Typography variant="subtitle1">{book.author}</Typography>
                             <Typography variant="subtitle2">{book.genre}</Typography>
@@ -94,6 +95,7 @@ export function Catalog() {
                     </Grid>
                 ))}
             </Grid>
+
             <Snackbar
                     open={open}
                     autoHideDuration={60000}

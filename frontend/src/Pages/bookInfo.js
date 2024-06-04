@@ -12,6 +12,7 @@ import {
   Grid,
   Snackbar
 } from '@mui/material';
+import { BookImage } from '../Components/BookImage';
 
 const styles = {
   paper: {
@@ -132,6 +133,7 @@ export function BookInformation(props) {
   return (
     <>
     <Paper elevation={3} style={styles.paper}>
+      <BookImage book={book}/>
       <Typography variant="h5" gutterBottom style={styles.sectionTitle}>
         Book Information
       </Typography>

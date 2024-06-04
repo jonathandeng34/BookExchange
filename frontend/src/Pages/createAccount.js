@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Avatar,
     Button,
@@ -18,6 +19,7 @@ import Endpoints from '../Endpoints';
 const theme = createTheme();
 
 export function CreateAccount() {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState({
@@ -52,6 +54,7 @@ export function CreateAccount() {
             setSnackbarText("Account Created Successfully");
             setOpen(true);
             setLoading(false);
+            navigate('/Login');
         })
         .catch(e => {
             setSnackbarText(e["reason"] || "Internal Error");

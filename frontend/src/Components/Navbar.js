@@ -29,7 +29,7 @@ export function Navbar(props)
             :
             (
                 <>
-                    <Link to="/"> 
+                    <Link to="/Home"> 
                         <Button variant="contained">
                                 Home
                         </Button> 

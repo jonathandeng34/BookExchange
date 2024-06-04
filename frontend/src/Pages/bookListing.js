@@ -6,7 +6,7 @@ export function BookListing(props) {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [file, setFile] = useState(null);
-  const [selectedGenre, setSelectedGenre] = useState('Fiction');
+  const [selectedGenre, setSelectedGenre] = useState("Fiction");
 
   const [open, setOpen] = useState(false);
   const [snackbarText, setSnackbarText]  = useState("");
@@ -18,16 +18,32 @@ export function BookListing(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(file);
     // Handle form submission
     // console.log({ title, author, file, selectedGenre });
+    if(!title || !author || !selectedGenre) {
+      setSnackbarText("Please Populate All Fields!");
+      setOpen(true);
+      return;
+    }
     Endpoints.doUploadBook(title, author, selectedGenre, props.setLoggedIn).then(async (response) => {
         if(!response.ok) {
           const json = await response.json();
           throw json;
         }
-        setSnackbarText("Upload Successful");
-        setOpen(true);
+        return response.json();
+    }).then(async (json) => {
+      console.log(json);
+      if(file && json["_id"]) {
+        try {
+          await Endpoints.doUploadImage(json._id, file);
+        }
+        catch(e) {
+          setSnackbarText("Upload Successful. Image Load Unsuccessful");
+          return;
+        }
+      }
+      setSnackbarText("Upload Successful.");
+      setOpen(true);
     }).catch(e => {
       setSnackbarText(e["reason"] || "Internal Server Error");
       setOpen(true);
@@ -37,7 +53,8 @@ export function BookListing(props) {
 
   const handleGenreChange = (e) => {
     const value = Array.from(e.target.selectedOptions, option => option.value);
-    setSelectedGenre(value);
+    if(value.length > 0) setSelectedGenre(value[0]);
+    else setSelectedGenre("Fiction");
   };
 
   return (
@@ -68,7 +85,7 @@ export function BookListing(props) {
         </div>
         <div style={{ marginBottom: '20px', position: 'relative' }}>
           <label htmlFor="upload-file" style={{ cursor: 'pointer', backgroundColor: '#f0f0f0', color: '#333', padding: '10px 20px', borderRadius: '5px', fontSize: '16px', display: 'inline-block' }}>
-            Click to upload book image <br />
+            {file ? file.name : "Click to upload book image"} <br />
             <input
               type="file"
               accept="image/*"

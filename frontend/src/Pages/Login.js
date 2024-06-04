@@ -69,7 +69,7 @@ export function Login(props) {
                 
             }
             props.setLoggedIn(true);
-            navigate('/');
+            navigate('/Home');
         }).catch(
             err => {
                 setSnackbarText("Internal Error");

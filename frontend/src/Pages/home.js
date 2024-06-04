@@ -110,7 +110,7 @@ export function Home() {
                         fontFamily: 'var(--secondary-font)', // Use custom font
                     }}
                 >
-                    Your user rating: {user["userRating"] || "Loading..."}
+                    Your user rating: {user.hasOwnProperty("userRating") ? user["userRating"] : "Loading..."}
                 </Typography>
             </Box>
 

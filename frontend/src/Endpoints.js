@@ -159,6 +159,17 @@ class EndPoints
         }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
     }
 
+    doUploadImage = (bookId, file, setLoggedIn) => {
+        const formData = new FormData();
+        formData.append("bookImg", file);
+
+        fetch(BackendURL+"/book/uploadImage/"+bookId, {
+            "method" : "POST",
+            "body": formData,
+            "credentials": "include"
+        });
+    }
+
 }
 
 export default new EndPoints();

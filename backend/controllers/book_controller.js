@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose, { mongo } from 'mongoose'
 import express from 'express'
 import Book from '../db_models/book_model.js';
 import { distance as editDistance } from 'fastest-levenshtein'
@@ -9,8 +9,12 @@ import BookComment from '../db_models/book_comment_model.js';
 
 import validateSchema from '../frontend_models/validate_schema.js';
 import { UploadBookSchema, SearchSchema, BookCommentSchema } from '../frontend_models/book_schemas.js';
+import multer from "multer";
+import { Readable } from 'stream';
+
 
 const router = express.Router();
+const upload = multer({});
 
 
 const withinDistance = (query, name, editDistance) => {
@@ -140,8 +144,74 @@ router.post('/upload', validateSchema(UploadBookSchema), validateJWT(), (req, re
         bookOwner: req.userId
     });
     newBook.save().then(doc => {
-        res.send("Upload Successful");
+        res.json({
+            "reason": "Upload Successful",
+            _id: doc._id
+        });
     });
+});
+
+router.post('/uploadImage/:bookId', validateID(), validateJWT(), upload.single('bookImg'), async (req, res) => {
+    let bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db);
+    const stream = Readable.from(req.file.buffer);
+    const book = await Book.findById(req.params.bookId);
+    if(!book) {
+        res.status(404);
+        res.json({
+            "reason": "Book Does Not Exist"
+        });
+        return;
+    }
+    if(book.bookOwner.toString() != req.userId) {
+        res.status(400);
+        res.json({
+            "reason": "Unauthorized"
+        });
+        return;
+    }
+
+    //TODO: Delete the Old File if it Exists
+    const oldFiles = await bucket.find({filename: req.params.bookId}).toArray();
+    for(const old of oldFiles) {
+        await bucket.delete(old._id);
+    }
+    
+    stream.pipe(bucket.openUploadStream(req.params.bookId));
+
+
+    res.sendStatus(200);
+});
+
+router.get('/downloadImage/:bookId', validateID(), async (req, res) => {
+    let bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db);
+    const book = await Book.findById(req.params.bookId);
+    if(!book) {
+        res.status(404);
+        res.json({
+            "reason": "Book Does Not Exist"
+        });
+        return;
+    }
+
+    const file = await bucket.find({filename: req.params.bookId});
+    if(!(await file.hasNext())) {
+        res.status(404);
+        res.json({
+            "reason": "Book Does Not Have Image"
+        });
+        return;
+    }
+
+    try {
+        let readStream = bucket.openDownloadStreamByName(req.params.bookId);
+        readStream.pipe(res);
+    }
+    catch(e) {
+        res.status(404);
+        res.json({
+            "reason": "Book does not have Image"
+        });
+    }
 });
 
 router.delete('/:id', validateJWT(), (req, res) => {
