@@ -1,5 +1,6 @@
 import express from 'express'
 import http from 'http'
+import { connect } from 'http2';
 import { Server } from 'socket.io'
 
 
@@ -13,26 +14,38 @@ const io = new Server(server, {
     }
 });
 
-export const userSocketId = (user) => {
-    return connections[user];
+export const userSocketId = (exchange) => {
+    if(!connections[exchange]) {
+        return undefined;
+    }
+    return connections[exchange];
 }
 
 const connections = {};
 
+//One connection per book exchange per user
+
 io.on('connection', (socket) => {
     console.log(socket.id, 'connected');
 
+    const exchangeId = socket.handshake.query.exchangeId;
     const userId = socket.handshake.query.userId;
-    if (userId !== undefined)
+    if(!connections[exchangeId]) {
+        connections[exchangeId] = [];
+    }
+    if (key !== undefined)
     {
-        connections[userId] = socket.id;
+        connections[exchangeId][userId] = socket.id;
     }
 
     io.emit("users", Object.keys(connections));
 
     socket.on('disconnect', () => {
         console.log(socket.id, 'disconnected');
-        delete connections[userId];
+        delete connections[exchangeId][userId];
+        if(connections[exchangeId].length == 0) {
+            delete connections[exchangeId];
+        }
         io.emit("users", Object.keys(connections));
     });
 

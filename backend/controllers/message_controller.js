@@ -4,10 +4,14 @@ import User from '../db_models/user_model.js'
 import validateJWT from '../security/validate_jwt.js'
 import Message from '../db_models/message_model.js'
 import { io, userSocketId } from '../socket.js'
+import { validateID } from '../frontend_models/validate_schema.js'
+import BookExchange from '../db_models/book_exchange_model.js'
+import { MessageSchema } from '../frontend_models/book_exchange_schemas.js'
+import validateSchema from '../frontend_models/validate_schema.js'
 
 const router = express.Router();
 
-router.get('/:id', validateJWT(), async (req, res) => {
+router.get('/:id', validateID(), validateJWT(), async (req, res) => {
     try {
             let sendUser = await User.findById(req.userId);
             if (!sendUser) {
@@ -17,20 +21,20 @@ router.get('/:id', validateJWT(), async (req, res) => {
                 });
                 return;
             }
-            let recvUser = await User.findById(req.params.id);
-            if (!recvUser) {
+
+            let exchange = await BookExchange.findById(req.params.id);
+
+            if(!exchange) {
                 res.status(404);
                 res.json({
-                    "reason": "Recipient Doesn't Exist"
+                    "reason": "Book Exchange Doesn't Exist"
                 });
                 return;
             }
+
             const messageHistory = await Message.find({
-                $and: [
-                    { senderID: new mongoose.Types.ObjectId(req.userId) },
-                    { recipientID: new mongoose.Types.ObjectId(req.params.id) }
-                ]
-            });
+                exchangeID: req.params.id
+            }).populate('senderID', '_id username');
 
 
             res.status(200);
@@ -43,16 +47,8 @@ router.get('/:id', validateJWT(), async (req, res) => {
     return;
 });
 
-router.post('/send/:id', validateJWT(), async (req, res) => {
+router.post('/send/:id', validateID(), validateSchema(MessageSchema), validateJWT(), async (req, res) => {
     try {
-            if (req.params.id == req.userId)
-            {
-                res.status(400);
-                res.json({
-                    "reason": "Message With Self"
-                });
-                return;
-            }
             let sendUser = await User.findById(req.userId);
             if (!sendUser) {
                 res.status(404);
@@ -61,23 +57,28 @@ router.post('/send/:id', validateJWT(), async (req, res) => {
                 });
                 return;
             }
-            let recvUser = await User.findById(req.params.id);
-            if (!recvUser) {
+
+            let exchange = await BookExchange.findById(req.params.id);
+            if(!exchange) {
                 res.status(404);
                 res.json({
-                    "reason": "Recipient Doesn't Exist"
+                    "reason": "Exchange Doesn't Exist"
                 });
                 return;
             }
+
             let newMessage = new Message({
                 senderID: req.userId,
-                recipientID: req.params.id,
+                exchangeID: req.params.id,
                 content: req.body.content,
             });
 
-            const recvSocket = userSocketId(req.params.id);
-            if (recvSocket) {
-                io.to(recvSocket).emit("message", newMessage);
+            const revSockets = userSocketId(req.params.id);
+
+            if(revSockets) {
+                for(const sock in revSockets) {
+                    io.to(revSockets[sock]).emit("message", newMessage);
+                }
             }
 
             newMessage.save().then(doc => {

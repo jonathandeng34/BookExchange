@@ -20,3 +20,14 @@ const CreateExchangeSchema = {
     additionalProperties: false
 };
 export { CreateExchangeSchema };
+
+const MessageSchema = {
+    type: "object",
+    properties: {
+        content: {type: "string"}
+    },
+    required: ["content"],
+    additionalProperties: false
+};
+
+export { MessageSchema };
