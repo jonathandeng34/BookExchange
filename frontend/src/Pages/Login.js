@@ -13,10 +13,19 @@ import {
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Endpoints from '../Endpoints.js';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of useHistory
 
 const theme = createTheme();
 
+
+
+
+
+//Login component
 export function Login() {
+
+    const navigate = useNavigate(); // Use useNavigate instead of useHistory
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState({
@@ -36,11 +45,33 @@ export function Login() {
         e.preventDefault();
         setLoading(true);
 
+
+
+        Endpoints.doLogin(formData.email, formData.password).then(async (response) => {
+            console.log(response)
+            if (!response.ok)
+            {
+                let errorText = await response.text();
+                throw errorText;
+            }
+            navigate('/');
+        }).catch(
+            err => {console.log(err)}
+            )
+            
+
+
+
+
+        
+
+        /*
         // Mock API call
         setTimeout(() => {
             setLoading(false);
             setOpen(true);
         }, 2000);
+        */
     };
 
     return (

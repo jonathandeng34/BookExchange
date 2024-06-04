@@ -8,7 +8,7 @@ export function Navbar()
     return (
 
         <>
-        <div style={{ marginTop: '800px' }}>
+        <div style={{ marginTop: '5px' }}>
             <Link to="/"> 
                 <Button variant="contained">
                       Home

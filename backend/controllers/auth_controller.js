@@ -96,6 +96,8 @@ router.post('/login', validateSchema(LoginSchema), (req, res) => {
     //Hash the given password using BCrypt and then compare it with the stored encrypted password
     //If the passwords match, return a JWT Token with the specified user ID.
 
+    console.log(req.body);
+
     User.findOne({
         email: req.body.email
     }).then((user) => {
@@ -115,7 +117,7 @@ router.post('/login', validateSchema(LoginSchema), (req, res) => {
                 res.cookie("jwt", jwtToken, {
                     maxAge: 3 * 24 * 60 * 60 * 1000,
                     httpOnly: true,
-                    sameSite: "lax",
+                    sameSite: "none",
                     secure: true
                 });
                 res.status(201);
