@@ -1,3 +1,5 @@
+
+
 const BackendURL = process.env.REACT_APP_BACKEND_URL;
 
 const isLoggedInMiddleware = (response, setLoggedIn) => {
@@ -11,7 +13,7 @@ const isLoggedInMiddleware = (response, setLoggedIn) => {
 class EndPoints
 {
 
-    doLogin = (email, password, setLoggedIn) => {
+    doLogin = (email, password) => {
 
         const Body = {
             "email" : email,
@@ -46,6 +48,116 @@ class EndPoints
         });
     }
 
+    doGetBookInfo = (bookId) => {
+        return fetch(BackendURL+"/book/get/"+bookId, {
+            "method": "GET"
+        });
+    }
+
+    doGetBookComments = (bookId) => {
+        return fetch(BackendURL+"/book/comments/"+bookId, {
+            "method": "GET"
+        });
+    }
+
+    sendBookComment = (bookId, commentText, starRating, setLoggedIn) => {
+        const Body = {
+            text: commentText,
+            starRating: starRating
+        };
+        return fetch(BackendURL+"/book/comment/"+bookId,  {
+            "headers":  {"Content-Type" : "application/json"},
+            "method" : "POST",
+            "body": JSON.stringify(Body),
+            "credentials": "include"
+        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
+    }
+
+    verifyIdentity = () => {
+        return fetch(BackendURL+"/auth/check-identity", {
+            "method": "GET",
+            "credentials": "include"
+        });
+    }
+
+    doUploadBook = (title, author, genre, setLoggedIn) => {
+
+        const Body = {
+            title: title,
+            author: author,
+            genre: genre
+        };
+
+        return fetch(BackendURL+"/book/upload", {
+            "headers":  {"Content-Type" : "application/json"},
+            "method" : "POST",
+            "body": JSON.stringify(Body),
+            "credentials": "include"
+        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
+    }
+
+    doCreateForgotPasswordRequest = (email) => {
+        const Body = {
+            email: email
+        };
+        return fetch(BackendURL+"/auth/forgotpassword/request", {
+            "headers":  {"Content-Type" : "application/json"},
+            "method" : "POST",
+            "body": JSON.stringify(Body)
+        });
+    };
+
+    doResetPassword = (code, password) => {
+        const Body = {
+            password: password
+        };
+        return fetch(BackendURL+"/auth/forgotpassword/change_password/"+code, {
+            "headers":  {"Content-Type" : "application/json"},
+            "method" : "POST",
+            "body": JSON.stringify(Body)
+        });
+    };
+
+    doRegister = (email, username, password) => {
+        const Body = {
+            email: email,
+            username: username,
+            password: password
+        };
+
+        return fetch(BackendURL+"/auth/register", {
+            "headers":  {"Content-Type" : "application/json"},
+            "method" : "POST",
+            "body": JSON.stringify(Body)
+        });
+    };
+
+    doGetSelf = () => {
+        return fetch(BackendURL+"/user/getself", {
+            "method": "GET",
+            "credentials": "include"
+        });
+    };
+
+    doGetRecommendations = () => {
+        return fetch(BackendURL+"/user/recommendation", {
+            "method": "GET",
+            "credentials": "include"
+        });
+    };
+
+    doStartExchange = (bookId, setLoggedIn) => {
+        const Body = {
+            bookId: bookId
+        };
+
+        return fetch(BackendURL+"/bookexchange/createExchange", {
+            "headers":  {"Content-Type" : "application/json"},
+            "method" : "POST",
+            "body": JSON.stringify(Body),
+            "credentials": "include"
+        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
+    }
 
 }
 

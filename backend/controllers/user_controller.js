@@ -44,6 +44,23 @@ router.get('/get/:id', validateID(), (req, res) => {
     });
 });
 
+router.get('/getself', validateJWT(), (req, res) => {
+    User.findOne({
+        _id: req.userId
+    }).then((user) => {
+        if (!user) {
+            res.status(404).json({
+                "reason": "User Not Found!"
+            });
+            return;
+        }
+        res.json(user);
+    }).catch((e) => {
+        console.log(e);
+        res.sendStatus(500);
+    });
+});
+
 router.get('/recommendation', validateJWT(), (req, res) => {
     User.findById(req.userId)
     .populate('exchangedBooks', '_id genre')

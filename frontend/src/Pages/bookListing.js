@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
+import Endpoints from '../Endpoints';
+import { Snackbar } from '@mui/material';
 
-export function BookListing() {
+export function BookListing(props) {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [file, setFile] = useState(null);
-  const [selectedGenres, setSelectedGenres] = useState([]);
+  const [selectedGenre, setSelectedGenre] = useState('Fiction');
+
+  const [open, setOpen] = useState(false);
+  const [snackbarText, setSnackbarText]  = useState("");
 
   const genres = [
     'Fiction', 'Non-fiction', 'Mystery', 'Thriller', 'Science Fiction',
@@ -13,13 +18,26 @@ export function BookListing() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(file);
     // Handle form submission
-    console.log({ title, author, file, selectedGenres });
+    // console.log({ title, author, file, selectedGenre });
+    Endpoints.doUploadBook(title, author, selectedGenre, props.setLoggedIn).then(async (response) => {
+        if(!response.ok) {
+          const json = await response.json();
+          throw json;
+        }
+        setSnackbarText("Upload Successful");
+        setOpen(true);
+    }).catch(e => {
+      setSnackbarText(e["reason"] || "Internal Server Error");
+      setOpen(true);
+    });
+
   };
 
   const handleGenreChange = (e) => {
     const value = Array.from(e.target.selectedOptions, option => option.value);
-    setSelectedGenres(value);
+    setSelectedGenre(value);
   };
 
   return (
@@ -54,6 +72,7 @@ export function BookListing() {
             <input
               type="file"
               accept="image/*"
+              formEncType='multipart/form-data'
               onChange={(e) => setFile(e.target.files[0])}
               required
               style={{ opacity: 0, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', cursor: 'pointer' }}
@@ -64,8 +83,7 @@ export function BookListing() {
           <label>
             Genre: <br />
             <select
-              multiple
-              value={selectedGenres}
+              value={selectedGenre}
               onChange={handleGenreChange}
               style={{ height: '100px', overflowY: 'scroll', marginBottom: '10px' }}
             >
@@ -81,6 +99,12 @@ export function BookListing() {
           Submit
         </button>
       </form>
+      <Snackbar
+                    open={open}
+                    autoHideDuration={6000}
+                    onClose={() => setOpen(false)}
+                    message={snackbarText}
+                />
     </div>
   );
 }

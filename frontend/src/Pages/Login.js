@@ -14,7 +14,7 @@ import {
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Endpoints from '../Endpoints.js';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of useHistory
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate instead of useHistory
 
 const theme = createTheme();
 
@@ -136,6 +136,11 @@ export function Login(props) {
                             {loading ? <CircularProgress size={24} /> : 'Log In'}
                         </Button>
                     </Box>
+                    <Link to="/ResetPassword">
+                        <Button variant="contained"> 
+                            Reset Password Page 
+                        </Button>
+                    </Link>
                 </Box>
                 <Snackbar
                     open={open}

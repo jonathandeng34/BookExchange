@@ -1,19 +1,52 @@
-import React from 'react';
-import { Button, Typography, Box, Container, Paper } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Button, Typography, Box, Container, Paper, Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import '../index.css';
+import Endpoints from '../Endpoints';
 
 export function Home() {
     const navigate = useNavigate();
-    const userRating = 4.5; // Example user rating, replace with dynamic value
-    const mostExchangedGenre = "Science Fiction"; // Example genre, replace with dynamic value
+    const [open, setOpen] = useState(false);
+    const [snackbarText, setSnackbarText] = useState("");
+    const [user, setUser] = useState({});
+    const [recommendations, setRecommendations] = useState({});
+
+    useEffect(() => {
+        Endpoints.doGetSelf().then(async (response) => {
+            const json = await response.json();
+            if(!response.ok) {
+                throw json;
+            }
+            return json;
+        }).then(json => {
+            setUser(json);
+        }).catch(e => {
+            setSnackbarText(e["reason"] || "Internal Error");
+            setOpen(true);
+        });
+
+        Endpoints.doGetRecommendations().then(async (response) => {
+            const json = await response.json();
+            if(!response.ok) {
+                throw json;
+            }
+            return json;
+        }).then(json => {
+            setRecommendations(json);
+        }).catch(e => {
+            setSnackbarText(e["reason"] || "Internal Error");
+            setOpen(true);
+        });
+
+
+    }, []);
 
     const handleStatusClick = () => {
-        navigate('/exchanges'); // Adjust this path as necessary
+        navigate('/DirectMessage'); // Adjust this path as necessary
     };
 
     const handlePostNewBookClick = () => {
-        navigate('/post-new-book'); // Adjust this path as necessary
+        navigate('/BookListing'); // Adjust this path as necessary
     };
 
     return (
@@ -32,6 +65,20 @@ export function Home() {
                 fontSize: '16px', // Matching font size
             }}
         >
+
+            <Box mt={4}>
+                <Typography 
+                    variant="h6" 
+                    sx={{ 
+                        fontWeight: 600, 
+                        color: '#000000',
+                        fontFamily: 'var(--secondary-font)', // Use custom font
+                    }}
+                >
+                    Welcome, {user["username"] || "Loading..."}
+                </Typography>
+            </Box>
+
             <Box mt={4}>
                 <Button 
                     variant="contained" 
@@ -63,7 +110,7 @@ export function Home() {
                         fontFamily: 'var(--secondary-font)', // Use custom font
                     }}
                 >
-                    Your user rating: {userRating}
+                    Your user rating: {user["userRating"] || "Loading..."}
                 </Typography>
             </Box>
 
@@ -94,17 +141,29 @@ export function Home() {
                         fontFamily: 'var(--secondary-font)', // Use custom font
                     }}
                 >
-                    We noticed that you exchanged most for the genre: {mostExchangedGenre}.
-             
-                    Here are more books from this genre which you haven’t exchanged for yet:
+
+                    {recommendations.genre ? 
+                        "We noticed that you exchanged most for the genre: " + recommendations.genre + ".\nHere are some more books from this genre which you haven't exchanged for yet"
+                    : "No Recommendations Yet! Exchange some books to get started!"}
+
                 </Typography>
                 {/* This section will list books from the genre. Replace with dynamic content */}
                 <Box mt={2}>
-                    <Typography variant="body1" sx={{ color: '#000000', mt: 2, fontFamily: 'var(--secondary-font)' }}>Book 1</Typography>
-                    <Typography variant="body1" sx={{ color: '#000000', mt: 2, fontFamily: 'var(--secondary-font)' }}>Book 2</Typography>
-                    <Typography variant="body1" sx={{ color: '#000000', mt: 2, fontFamily: 'var(--secondary-font)' }}>Book 3</Typography>
+                    {
+                        recommendations.books ? recommendations.books.map(book => (
+                            <Typography key = {book._id} onClick={() => navigate('/BookInformation/'+book._id)} variant="body1" sx={{ color: '#000000', mt: 2, fontFamily: 'var(--secondary-font)' }}>{book.title}</Typography>
+                        ))
+                        : null
+                    }
+                   
                 </Box>
             </Box>
+            <Snackbar
+                    open={open}
+                    autoHideDuration={60000}
+                    onClose={() => setOpen(false)}
+                    message={snackbarText}
+                />
         </Container>
     );
 }

@@ -1,4 +1,8 @@
-import React from 'react';
+import React, {useState, useEffect, useRef} from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import Endpoints from '../Endpoints';
+import { snackbarError } from '../utils';
+
 import {
   Paper,
   Typography,
@@ -6,6 +10,7 @@ import {
   Rating,
   TextField,
   Grid,
+  Snackbar
 } from '@mui/material';
 
 const styles = {
@@ -39,47 +44,141 @@ const styles = {
   },
 };
 
-export function BookInformation() {
+export function BookInformation(props) {
+
+  const navigate = useNavigate();
+  const [book, setBook] = useState({});
+  const [comments, setComments] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [snackbarText, setSnackbarText]  = useState("");
+  const [commentRating, setCommentRating] = useState(4.5);
+  const [refresh, setRefresh] = useState(0);
+
+  const { bookId } = useParams();
+
+  let commentRef = useRef(null);
+
+  
+
+  useEffect(() => {
+    Endpoints.doGetBookInfo(bookId).then(async (response) => {
+      const json = await response.json();
+      if(!response.ok) {
+        throw json;
+      }
+      return json;
+    }).then(json => {
+      setBook(json);
+    }).catch(e => {
+      console.log(e);
+      setSnackbarText(e["reason"] || "Unable to Fetch Book");
+      setOpen(true);
+    });
+
+    Endpoints.doGetBookComments(bookId).then(async (response) => {
+      const json = await response.json();
+      if(!response.ok) {
+        throw json;
+      }
+      return json;
+    }).then(json => {
+      setComments(json);
+    }).catch(e => {
+      console.log(e);
+      setSnackbarText(e["reason"] || "Unable to Fetch Comments");
+      setOpen(true);
+    });
+
+  }, [refresh]);
+
+  const sendComment = () => {
+   if(!commentRef.current.value) {
+    return;
+   }
+    Endpoints.sendBookComment(bookId, commentRef.current.value, commentRating, props.setLoggedIn).then(async (response) => {
+      if(!response.ok) {
+        const json = await response.json();
+        throw json;
+      }
+      setSnackbarText("Comment Posted");
+      setOpen(true);
+      setRefresh(refresh+1);
+    }).catch(e => {
+      console.log(e);
+      setSnackbarText(e["reason"] || "Unable to Post Comment");
+      setOpen(true);
+    });
+  }
+
+  const requestExchange = () => {
+    Endpoints.doStartExchange(bookId, props.setLoggedIn).then(async (response) => {
+      const json = await response.json();
+      if(!response.ok) {
+        throw json;
+      }
+      return json;
+    }).then(json => {
+      navigate('/DirectMessage');
+    }).catch(e => {
+      console.log(e);
+      setSnackbarText(e["reason"] || "Unable to Post Comment");
+      setOpen(true);
+    });
+  };
+
+  
+
+
   return (
+    <>
     <Paper elevation={3} style={styles.paper}>
       <Typography variant="h5" gutterBottom style={styles.sectionTitle}>
         Book Information
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
-          <Typography variant="subtitle1" style={styles.title}>Title: [Book Title]</Typography>
+          <Typography variant="subtitle1" style={styles.title}>Title: {book.title || "Loading..."}</Typography>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Typography variant="subtitle1" style={styles.title}>Author: [Author Name]</Typography>
+          <Typography variant="subtitle1" style={styles.title}>Author: {book.author || "Loading..."}</Typography>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Typography variant="subtitle1" style={styles.title}>Genre: [Genre]</Typography>
+          <Typography variant="subtitle1" style={styles.title}>Genre: {book.genre || "Loading..."}</Typography>
         </Grid>
       </Grid>
 
       <Typography variant="h5" gutterBottom style={styles.sectionTitle}>
         Book Status
       </Typography>
-      <Typography style={styles.status}>Status: [Book Status]</Typography>
+      <Typography style={styles.status}>Status: {book.isBookOutForExchange ? "Out for Exchange" : "Available"}</Typography>
 
       <Typography variant="h5" gutterBottom style={styles.sectionTitle}>
-        Owner Rating
+        User Rating
       </Typography>
-      <Rating value={4.5} readOnly />
+      <Typography style={styles.status}>{(book.bookOwner && book.bookOwner.userRating) || "Loading..."}</Typography>
 
       <Typography variant="h5" gutterBottom style={styles.sectionTitle}>
         Comments
       </Typography>
-      <Typography style={styles.status}>[Comments]</Typography>
+      <div>
+        {comments.length == 0 ? "No Comments" : comments.map(comment => {
+          return (
+          <div key={comment._id}>
+            {comment.userId.username} rated {comment.starRating} and said: {comment.commentText}
+          </div>);
+        })}
+      </div>
 
-      <Button variant="contained" style={styles.button}>
+      <Button variant="contained" style={styles.button} onClick={requestExchange}>
         Request Book Exchange
       </Button>
 
       <Typography variant="h5" gutterBottom style={styles.sectionTitle}>
         Rate the Book
       </Typography>
-      <Rating name="rate-book" defaultValue={0} precision={0.5} />
+      <Rating name="rate-book" value={commentRating} precision={0.5} onChange={(event, newValue) => {
+        setCommentRating(newValue);
+      }} />
       <TextField
         label="Additional Comments"
         variant="outlined"
@@ -87,10 +186,18 @@ export function BookInformation() {
         rows={4}
         fullWidth
         style={styles.textField}
+        inputRef={commentRef}
       />
-      <Button variant="contained" style={styles.button}>
+      <Button variant="contained" style={styles.button} onClick={sendComment}>
         Submit Rating
       </Button>
     </Paper>
+    <Snackbar
+                    open={open}
+                    autoHideDuration={6000}
+                    onClose={() => setOpen(false)}
+                    message={snackbarText}
+                />
+    </>
   );
 }

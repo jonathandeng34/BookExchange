@@ -5,9 +5,11 @@ import BookIcon from '@mui/icons-material/Book';
 import { Snackbar } from '@mui/material';
 import '../index.css'; // Assuming the CSS file is named styles.css
 import Endpoints from '../Endpoints';
+import { useNavigate } from 'react-router-dom';
 
 export function Catalog() {
     // State for search query and selected genre
+    const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedGenre, setSelectedGenre] = useState('');
     const [books, setBooks] = useState([]);
@@ -83,7 +85,7 @@ export function Catalog() {
             <Grid container spacing={2}>
                 {filteredBooks.map((book, index) => (
                     <Grid item xs={4} key={index}>
-                        <div className="book-container">
+                        <div className="book-container" onClick={() => { navigate('/BookInformation/'+book._id); }}>
                             <BookIcon fontSize="large" />
                             <Typography variant="h6">{book.title}</Typography>
                             <Typography variant="subtitle1">{book.author}</Typography>

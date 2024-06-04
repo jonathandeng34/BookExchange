@@ -56,7 +56,7 @@ and posting of book information.
 */
 
 router.get('/all', (req, res) => {
-    Book.find({}).then(books => {
+    Book.find({}).populate('bookOwner', '_id username userRating').then(books => {
         res.send(books);
     }).catch(e => {
         console.log(e);
@@ -78,6 +78,7 @@ router.get('/get/:id', validateID(), (req, res) => {
             res.json({
                 "reason": "Book Not Found!"
             });
+            return;
         }
         res.send(book);
     }).catch((e) => {

@@ -12,14 +12,21 @@ import {
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Endpoints from '../Endpoints';
 
 const theme = createTheme();
 
 export function ResetPassword() { 
     const [loading, setLoading] = useState(false);
+    const [resetLoading, setResetLoading] = useState(false);
+    const [snackbarText, setSnackbarText] = useState("");
     const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
+    });
+    const [resetFormData, setResetFormData] = useState({
+        code: '',
+        newPassword: ''
     });
 
     const handleChange = (e) => {
@@ -30,15 +37,56 @@ export function ResetPassword() {
         });
     };
 
+    const handleResetChange = (e) => {
+        const { name, value } = e.target;
+        setResetFormData({
+            ...resetFormData,
+            [name]: value,
+        });
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
 
-
-        setTimeout(() => {
-            setLoading(false);
+        Endpoints.doCreateForgotPasswordRequest(formData.email).then(async (response) => {
+            if(!response.ok) {
+                throw (await response.json());
+            }
+            setSnackbarText("Password Change Request Created. Check your Email.");
             setOpen(true);
-        }, 2000);
+            setLoading(false);
+        }).catch(e => {
+            setSnackbarText(e["reason"] || "Internal Error");
+            setOpen(true);
+            setLoading(false);
+        });
+        
+    };
+
+    const handleResetSubmit = (e) => {
+        e.preventDefault();
+        setLoading(true);
+        if(resetFormData.newPassword.trim().length == 0) {
+            setSnackbarText("Please Set a New Password");
+            setOpen(true);
+            return;
+        }
+
+        Endpoints.doResetPassword(resetFormData.code, resetFormData.newPassword).then(async (response) => {
+            if(!response.ok) {
+                throw (await response.json());
+            }
+            setSnackbarText("Password Changed Successfully");
+            setOpen(true);
+            setLoading(false);
+        })
+        .catch(e => {
+            setSnackbarText(e["reason"] || "Internal Error");
+            setOpen(true);
+            setLoading(false);
+        });
+
     };
 
     return (
@@ -80,12 +128,42 @@ export function ResetPassword() {
                             {loading ? <CircularProgress size={24} /> : 'Send Reset Link'}
                         </Button>
                     </Box>
+                    <Box component="form" onSubmit={handleResetSubmit} noValidate sx={{ mt: 3 }}>
+                        <TextField
+                            required
+                            fullWidth
+                            id="code"
+                            label="Forgot Password Code"
+                            name="code"
+                            value={resetFormData.code}
+                            onChange={handleResetChange}
+                        />
+                        <TextField
+                            required
+                            fullWidth
+                            id="password"
+                            label="New Password"
+                            name="newPassword"
+                            type="password"
+                            value={resetFormData.newPassword}
+                            onChange={handleResetChange}
+                        />
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                            disabled={loading}
+                        >
+                            {resetLoading ? <CircularProgress size={24} /> : 'Reset Password'}
+                        </Button>
+                    </Box>
                 </Box>
                 <Snackbar
                     open={open}
                     autoHideDuration={6000}
                     onClose={() => setOpen(false)}
-                    message="Reset link sent successfully!"
+                    message={snackbarText}
                 />
             </Container>
         </ThemeProvider>

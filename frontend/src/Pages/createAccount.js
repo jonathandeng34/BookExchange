@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Endpoints from '../Endpoints';
 
 const theme = createTheme();
 
@@ -20,12 +21,12 @@ export function CreateAccount() {
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
+        username: '',
         email: '',
         password: '',
         confirmPassword: '',
     });
+    const [snackbarText, setSnackbarText] = useState("");
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -38,6 +39,25 @@ export function CreateAccount() {
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
+        if(formData.password !== formData.confirmPassword) {
+            setSnackbarText("Please Ensure you Typed your Password Correctly");
+            setOpen(true);
+            return;
+        }
+
+        Endpoints.doRegister(formData.email, formData.username, formData.password).then(async (response) => {
+            if(!response.ok) {
+                throw (await response.json());
+            }
+            setSnackbarText("Account Created Successfully");
+            setOpen(true);
+            setLoading(false);
+        })
+        .catch(e => {
+            setSnackbarText(e["reason"] || "Internal Error");
+            setOpen(true);
+            setLoading(false);
+        });
 
         // Mock API call
         setTimeout(() => {
@@ -66,28 +86,14 @@ export function CreateAccount() {
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    autoComplete="fname"
-                                    name="firstName"
-                                    required
-                                    fullWidth
-                                    id="firstName"
-                                    label="First Name"
-                                    autoFocus
-                                    value={formData.firstName}
-                                    onChange={handleChange}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12}>
                                 <TextField
                                     required
                                     fullWidth
-                                    id="lastName"
-                                    label="Last Name"
-                                    name="lastName"
-                                    autoComplete="lname"
-                                    value={formData.lastName}
+                                    id="username"
+                                    label="Username"
+                                    name="username"
+                                    value={formData.username}
                                     onChange={handleChange}
                                 />
                             </Grid>
@@ -144,7 +150,7 @@ export function CreateAccount() {
                     open={open}
                     autoHideDuration={6000}
                     onClose={() => setOpen(false)}
-                    message="Account created successfully!"
+                    message={snackbarText}
                 />
             </Container>
         </ThemeProvider>

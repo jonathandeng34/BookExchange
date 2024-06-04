@@ -7,11 +7,17 @@ import jwt from 'jsonwebtoken'
 
 
 import validateSchema, { validateID } from '../frontend_models/validate_schema.js';
+import validateJWT from '../security/validate_jwt.js';
 import { LoginSchema, RegisterSchema, ForgotPasswordSchema, ChangePasswordSchema } from '../frontend_models/auth_schemas.js';
 
 import ForgotPasswordModel from '../db_models/forgotpass_model.js';
 
 const router = express.Router();
+
+
+router.get('/check-identity', validateJWT(), (req, res) => {
+    res.sendStatus(200);
+})
 
 /**
  * Expected JSON:
