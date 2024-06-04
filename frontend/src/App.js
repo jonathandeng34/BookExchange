@@ -24,13 +24,6 @@ function App() {
 
   const [text, setText] = useState('')
 
-  useEffect(() => {
-    fetch('/test').then(res => res.json())
-    .then(json => {
-      setText(JSON.stringify(json))
-    })
-  }, []);
-
   return (
   <>
     <Router>
