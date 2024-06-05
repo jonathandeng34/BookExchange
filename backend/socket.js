@@ -28,24 +28,17 @@ const connections = {};
 io.on('connection', (socket) => {
     console.log(socket.id, 'connected');
 
-    const exchangeId = socket.handshake.query.exchangeId;
     const userId = socket.handshake.query.userId;
-    if(!connections[exchangeId]) {
-        connections[exchangeId] = [];
-    }
-    if (key !== undefined)
+    if (userId !== undefined)
     {
-        connections[exchangeId][userId] = socket.id;
+        connections[userId] = socket.id;
     }
 
     io.emit("users", Object.keys(connections));
 
     socket.on('disconnect', () => {
         console.log(socket.id, 'disconnected');
-        delete connections[exchangeId][userId];
-        if(connections[exchangeId].length == 0) {
-            delete connections[exchangeId];
-        }
+        delete connections[userId];
         io.emit("users", Object.keys(connections));
     });
 

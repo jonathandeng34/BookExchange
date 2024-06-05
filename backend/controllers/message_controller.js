@@ -32,6 +32,14 @@ router.get('/:id', validateID(), validateJWT(), async (req, res) => {
                 return;
             }
 
+            if (req.userId != exchange.participantOne.toString() && req.userId != exchange.participantTwo.toString()) {
+                res.status(401);
+                res.json({
+                    "reason": "Unauthorized"
+                });
+                return;
+            }
+
             const messageHistory = await Message.find({
                 exchangeID: req.params.id
             }).populate('senderID', '_id username');
@@ -66,6 +74,19 @@ router.post('/send/:id', validateID(), validateSchema(MessageSchema), validateJW
                 });
                 return;
             }
+            let receiver = "";
+
+            if (exchange.participantOne.toString() == req.userId) {
+                receiver = exchange.participantTwo.toString();
+            } else if (exchange.participantTwo.toString() == req.userId) {
+                receiver = exchange.participantOne.toString();
+            } else {
+                res.status(401);
+                res.json({
+                    "reason": "Unauthorized"
+                });
+                return;
+            }
 
             let newMessage = new Message({
                 senderID: req.userId,
@@ -73,12 +94,9 @@ router.post('/send/:id', validateID(), validateSchema(MessageSchema), validateJW
                 content: req.body.content,
             });
 
-            const revSockets = userSocketId(req.params.id);
-
-            if(revSockets) {
-                for(const sock in revSockets) {
-                    io.to(revSockets[sock]).emit("message", newMessage);
-                }
+            const recvSocket = userSocketId(receiver);
+            if (recvSocket) {
+                io.to(recvSocket).emit("message", newMessage);
             }
 
             newMessage.save().then(doc => {

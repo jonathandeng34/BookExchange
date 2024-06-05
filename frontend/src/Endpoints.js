@@ -159,6 +159,13 @@ class EndPoints
         }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
     }
 
+    doGetExchangesByUser = () => {
+        return fetch(BackendURL+"/bookexchange/getbyuser", {
+            "method" : "GET",
+            "credentials": "include"
+        });
+    }
+
     doUploadImage = (bookId, file, setLoggedIn) => {
         const formData = new FormData();
         formData.append("bookImg", file);
@@ -170,6 +177,25 @@ class EndPoints
         });
     }
 
+    doSendMessage = (exchangeId, content, setLoggedIn) => {
+        const Body = {
+            content: content
+        };
+
+        fetch(BackendURL+"/message/send/"+exchangeId, {
+            "method" : "POST",
+            "body": JSON.stringify(Body),
+            "credentials": "include"
+        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));;        
+    }
+
+    doGetMessages = (exchangeId)  => {
+        return fetch(BackendURL + "/message/" + exchangeId, {
+            "method": "GET",
+            "credentials": "include"
+        });
+    }
+    
 }
 
 export default new EndPoints();

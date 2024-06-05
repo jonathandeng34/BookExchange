@@ -33,8 +33,19 @@ router.get('/getbyuser', validateJWT(), (req, res) => {
             {participantOne: req.userId},
             {participantTwo: req.userId}
         ]
-    }).then(exchanges => {
-        res.json(exchanges);
+    }).populate('participantOne participantTwo', '_id username').then(exchanges => {
+        // Used to get sidebar name
+        res.json(exchanges.map(exchange => {
+            exchange = exchange._doc
+            if (exchange.participantOne._id == req.userId) {
+                exchange.user = exchange.participantTwo;
+            } else {
+                exchange.user = exchange.participantOne;
+            }
+            delete exchange.participantOne;
+            delete exchange.participantTwo;
+            return exchange;
+        }));
     })
     .catch(e => {
         console.log(e);
