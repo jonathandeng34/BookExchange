@@ -1,11 +1,6 @@
 /* CSS goes  here :) */
 
 
-
-/*specific CSS styling for logIn */
-
-/* CSS goes here :) */
-
 html,body
 {
     width: 100%;
@@ -109,7 +104,7 @@ body {
 
 
 
-/* Don’t have an account yet? Sign up. */
+/* no accoutn styles */
 .no-account {
     font-family: 'Montserrat', sans-serif;
     font-weight: 500;
@@ -125,6 +120,7 @@ body {
     width: 1331px;
     height: 1437px;
     background: #FBFFFF;
+    align-items: center;
     mix-blend-mode: normal;
 }
 
@@ -295,24 +291,23 @@ h6 {
 /* Navbar Styles */
 .navbar-container {
     display: flex;
-    justify-content: space-around; /* Adjust as needed */
-    align-items: center; /* Center vertically */
-    height: 60px; /* Set a fixed height for the navigation bar */
-    background-color: #f0f0f0; /* Background color */
-    padding: 0 20px; /* Add some padding to the left and right */
+    justify-content: center; 
+    align-items: center; 
+    height: 60px; 
+    background-color: #f0f0f0; 
+    padding: 0 20px;
 }
 
 .navbar-link {
-    text-decoration: none; /* Remove underline from links */
-    color: #000; /* Set link color */
+    text-decoration: none; 
+    color: #000; 
 }
 
 .navbar-link:hover {
-    color: #555; /* Change link color on hover */
+    color: #555;
 }
 
 .navbar-button {
-    /* Add styles for buttons */
     background-color: #ccc;
     border: none;
     padding: 10px 20px;

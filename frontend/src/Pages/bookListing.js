@@ -58,8 +58,8 @@ export function BookListing(props) {
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: 'auto' }}>
-      <h1>Upload a New Book</h1>
+    <div style={{ maxWidth: '600px', margin: 'auto'}}>
+      <h1 style = {{textAlign : 'center'}}>Upload a New Book</h1>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '20px' }}>
           <label>
@@ -102,7 +102,7 @@ export function BookListing(props) {
             <select
               value={selectedGenre}
               onChange={handleGenreChange}
-              style={{ height: '100px', overflowY: 'scroll', marginBottom: '10px' }}
+              style={{ height: '25px', overflowY: 'scroll', marginBottom: '10px' }}
             >
               {genres.map((genre) => (
                 <option key={genre} value={genre}>

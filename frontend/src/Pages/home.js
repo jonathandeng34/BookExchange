@@ -84,7 +84,7 @@ export function Home() {
                     variant="contained" 
                     onClick={handleStatusClick}
                     sx={{ 
-                        backgroundColor: '#E8DFCA', 
+                        backgroundColor: '#FBFFFF', 
                         color: '#4D869C', 
                         fontFamily: 'var(--secondary-font)', // Use custom font
                         fontWeight: 600, 
@@ -93,7 +93,7 @@ export function Home() {
                         borderRadius: '8px',
                         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.3)',
                         '&:hover': {
-                            backgroundColor: '#d8cfc0',
+                            backgroundColor: '#FFFFFF',
                         }
                     }}
                 >

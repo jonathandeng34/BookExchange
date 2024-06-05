@@ -14,7 +14,7 @@ import {
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Endpoints from '../Endpoints.js';
-import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate instead of useHistory
+import { Link, useNavigate } from 'react-router-dom'; 
 
 const theme = createTheme();
 
@@ -25,7 +25,7 @@ const theme = createTheme();
 //Login component
 export function Login(props) {
 
-    const navigate = useNavigate(); // Use useNavigate instead of useHistory
+    const navigate = useNavigate(); 
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [snackbarText, setSnackbarText] = useState("");
