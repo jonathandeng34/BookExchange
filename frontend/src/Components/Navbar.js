@@ -31,7 +31,7 @@ export function Navbar(props) {
                 </Link>
             ) : (
                 <>
-                    <Link to="/" style={{ textDecoration: 'none', margin: '0 10px' }}>
+                    <Link to="/Home" style={{ textDecoration: 'none', margin: '0 10px' }}>
                         <Button variant="contained" style={buttonStyle}>
                             Home
                         </Button>

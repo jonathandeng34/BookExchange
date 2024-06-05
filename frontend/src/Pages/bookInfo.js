@@ -157,7 +157,7 @@ export function BookInformation(props) {
       <Typography variant="h5" gutterBottom style={styles.sectionTitle}>
         User Rating
       </Typography>
-      <Typography style={styles.status}>{(book.bookOwner && book.bookOwner.userRating) || "Loading..."}</Typography>
+      <Typography style={styles.status}>{(book.bookOwner && book.bookOwner.userRating != undefined) ? book.bookOwner.userRating : "Loading..."}</Typography>
 
       <Typography variant="h5" gutterBottom style={styles.sectionTitle}>
         Comments
