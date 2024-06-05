@@ -1,3 +1,6 @@
+import React from "react";
+import { useLocation } from "react-router-dom";
+
 async function snackbarError(response, setOpen, setSnackbarText) {
     let errorText = await response.text();
     try {
@@ -15,3 +18,12 @@ async function snackbarError(response, setOpen, setSnackbarText) {
 }
 
 export { snackbarError };
+
+//CREDIT: https://v5.reactrouter.com/web/example/query-parameters
+function useQuery() {
+    const { search } = useLocation();
+  
+    return React.useMemo(() => new URLSearchParams(search), [search]);
+  }
+
+export { useQuery };

@@ -103,7 +103,7 @@ router.get('/recommendation', validateJWT(), (req, res) => {
         const exchangedIds = user.exchangedBooks.map(book => book["_id"].toString());
 
         let recommendedBooks = validBooks.filter(book => {
-            return !exchangedIds.includes(book._id.toString());
+            return (!(exchangedIds.includes(book._id.toString())) && (book.bookOwner.toString() !== user._id.toString()));
         });
         shuffle(recommendedBooks);
         recommendedBooks = recommendedBooks.slice(0,3);

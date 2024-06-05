@@ -6,6 +6,7 @@ import '../index.css'; // Assuming the CSS file is named styles.css
 import Endpoints from '../Endpoints';
 import { useNavigate } from 'react-router-dom';
 import { BookImage } from '../Components/BookImage.js';
+import { BookContainer } from '../Components/BookContainer.js';
 
 export function Catalog() {
     // State for search query and selected genre
@@ -87,19 +88,7 @@ export function Catalog() {
             </TextField>
 
             {/* Display Filtered Books */}
-            <Grid container spacing={2}>
-                {filteredBooks.map((book, index) => (
-                    <Grid item xs={4} key={index}>
-                        <div className="book-container" onClick={() => { navigate('/BookInformation/'+book._id); }}>
-                            {/*<BookIcon fontSize="large" />*/}
-                            <BookImage book={book}/>
-                            <Typography variant="h6">{book.title}</Typography>
-                            <Typography variant="subtitle1">{book.author}</Typography>
-                            <Typography variant="subtitle2">{book.genre}</Typography>
-                        </div>
-                    </Grid>
-                ))}
-            </Grid>
+            <BookContainer books={filteredBooks}/>
 
             <Snackbar
                     open={open}

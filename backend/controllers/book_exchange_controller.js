@@ -33,14 +33,19 @@ router.get('/getbyuser', validateJWT(), (req, res) => {
             {participantOne: req.userId},
             {participantTwo: req.userId}
         ]
-    }).populate('participantOne participantTwo', '_id username').then(exchanges => {
+    }).populate('participantOne participantTwo', '_id username')
+    .populate('bookOne', '_id title')
+    .populate('bookTwo', '_id title')
+    .then(exchanges => {
         // Used to get sidebar name
         res.json(exchanges.map(exchange => {
             exchange = exchange._doc
             if (exchange.participantOne._id == req.userId) {
                 exchange.user = exchange.participantTwo;
+                exchange.role = 1;
             } else {
                 exchange.user = exchange.participantOne;
+                exchange.role = 2;
             }
             delete exchange.participantOne;
             delete exchange.participantTwo;
@@ -416,7 +421,7 @@ router.post('/confirmreexchange/:id', validateID(), validateJWT(), (req, res) =>
             await BookExchange.findByIdAndDelete(exchange._id);
 
             res.json({
-                "reason": "Complete"
+                "reason": "Exchange Complete"
             });
             return;
         }
@@ -440,14 +445,20 @@ router.delete('/cancel/:id', validateID() ,validateJWT(), async (req, res) => {
 
     //First set the books to no longer in exchange
     if(!(await removeBooksFromExchange(req, res))) {
-        res.sendStatus(404);
+        res.status(404);
+        res.json({
+            "reason": "Unable to Remove Books from Exchange"
+        });
         return;
     }
 
 
 
     BookExchange.findByIdAndDelete(req.params.id).then(async () => {
-        res.sendStatus(200);
+        res.status(200);
+        res.json({
+            "reason": "Exchange Cancelled"
+        });
     }).catch(e => {
         console.log(e);
         res.sendStatus(400);

@@ -219,12 +219,14 @@ router.delete('/:id', validateJWT(), (req, res) => {
 
         if(!book) {
             res.sendStatus(404);
+            return;
         }
         if(book.isBookOutForExchange) {
             res.status(400);
             res.json({
                 "reason": "Book Out for Exchange"
             });
+            return;
         }
 
         if(book.bookOwner.toString() != req.userId) {
@@ -236,7 +238,10 @@ router.delete('/:id', validateJWT(), (req, res) => {
         }
 
         Book.findByIdAndDelete(req.params.id).then(() => {
-            res.sendStatus(200);
+            res.status(200);
+            res.send({
+                "reason": "Book Deleted Successfully"
+            });
         }).catch(e => {
             console.log(e);
             res.sendStatus(500);

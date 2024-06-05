@@ -15,6 +15,7 @@ import { DirectMessaging } from './Pages/DM'
 import { Verification } from './Pages/verification'
 import { BookListing } from './Pages/bookListing'
 import Endpoints from './Endpoints.js';
+import { BooksByUser } from './Pages/userBooks.js';
 
 
 
@@ -51,6 +52,7 @@ function App() {
           <Route path="/DirectMessage" element = {<DirectMessaging/>}/>
           <Route path="/Verification" element = {<Verification/>}/>
           <Route path="/BookListing" element = {<BookListing setLoggedIn={setLoggedIn}/>}/>
+          <Route path="/UserBooks/:userId" element = {<BooksByUser/>}/>
 
 
         </Route>

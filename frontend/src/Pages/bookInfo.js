@@ -1,7 +1,8 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Endpoints from '../Endpoints';
-import { snackbarError } from '../utils';
+import { snackbarError } from '../utils.js';
+import { useQuery } from '../utils.js';
 
 import {
   Paper,
@@ -38,6 +39,11 @@ const styles = {
     backgroundColor: '#2F6066',  // Navbar button background color
     color: '#FBFFFF',  // Navbar button text color
   },
+  orangeButton: {
+    marginTop: 30,
+    backgroundColor: 'rgb(255, 111, 97)',  // Navbar button background color
+    color: '#FBFFFF',  // Navbar button text color
+  },
   textField: {
     marginTop: 10,
     marginBottom: 20,
@@ -54,10 +60,12 @@ export function BookInformation(props) {
   const [snackbarText, setSnackbarText]  = useState("");
   const [commentRating, setCommentRating] = useState(4.5);
   const [refresh, setRefresh] = useState(0);
+  const [myId, setMyId] = useState(null);
 
   const { bookId } = useParams();
 
   let commentRef = useRef(null);
+  let query = useQuery();
 
   
 
@@ -92,6 +100,20 @@ export function BookInformation(props) {
 
   }, [refresh]);
 
+  useEffect(() => {
+    Endpoints.doGetSelf().then(async (response) => {
+      const json = await response.json();
+      if(!response.ok) {
+          throw json;
+      }
+      return json;
+    }).then(json => {
+        setMyId(json["_id"]);
+    }).catch(e => {
+        //Do Nothing
+    });
+  }, []);
+
   const sendComment = () => {
    if(!commentRef.current.value) {
     return;
@@ -122,10 +144,45 @@ export function BookInformation(props) {
       navigate('/DirectMessage');
     }).catch(e => {
       console.log(e);
-      setSnackbarText(e["reason"] || "Unable to Post Comment");
+      setSnackbarText(e["reason"] || "Unable to Start Exchange");
       setOpen(true);
     });
   };
+
+  const deleteBook = () => {
+    Endpoints.doDeleteBook(bookId).then(async (response) => {
+      const json = await response.json();
+      if(!response.ok) {
+          throw json;
+      }
+      return json;
+    }).then(json => {
+      navigate("/");
+    }).catch(e => {
+      console.log(e);
+      setSnackbarText(e["reason"] || "Internal Error");
+      setOpen(true);
+    });
+  };
+
+  const acceptExchange = () => {
+    if(!query.get("exchange")) {
+      return;
+    }
+    Endpoints.doAcceptTwoExchange(query.get("exchange"), bookId).then(async (response) => {
+      const json = await response.json();
+      if(!response.ok) {
+        throw json;
+      }
+      return json;
+    }).then(json => {
+      navigate('/DirectMessage');
+    }).catch(e => {
+      console.log(e);
+      setSnackbarText(e["reason"] || "Unable to Start Exchange");
+      setOpen(true);
+    });
+  }
 
   
 
@@ -171,9 +228,20 @@ export function BookInformation(props) {
         })}
       </div>
 
-      <Button variant="contained" style={styles.button} onClick={requestExchange}>
+      { query.get("exchange") ? <Button variant="contained" style={styles.button} onClick={acceptExchange}>
+        Use for Book Exchange
+        </Button>
+        :
+        ((myId && book["bookOwner"] && book["bookOwner"]["_id"] && myId === book["bookOwner"]["_id"]) ? 
+        <Button variant="contained" style={styles.orangeButton} onClick={deleteBook}>
+          Delete Book
+        </Button>
+        :
+        <Button variant="contained" style={styles.button} onClick={requestExchange}>
         Request Book Exchange
-      </Button>
+        </Button>)
+      
+    }
 
       <Typography variant="h5" gutterBottom style={styles.sectionTitle}>
         Rate the Book

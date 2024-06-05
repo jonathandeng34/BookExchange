@@ -48,9 +48,22 @@ class EndPoints
         });
     }
 
+    doGetBooksOwnedBy = (userId) => {
+        return fetch(BackendURL+"/book/ownedby/"+userId, {
+            "method": "GET"
+        });
+    }
+
     doGetBookInfo = (bookId) => {
         return fetch(BackendURL+"/book/get/"+bookId, {
             "method": "GET"
+        });
+    }
+
+    doDeleteBook = (bookId) => {
+        return fetch(BackendURL+"/book/"+bookId,  {
+            "method": "DELETE",
+            "credentials": "include"
         });
     }
 
@@ -139,6 +152,12 @@ class EndPoints
         });
     };
 
+    doGetUser = (userId) => {
+        return fetch(BackendURL+"/user/get/"+userId, {
+            "method": "GET"
+        });
+    };
+
     doGetRecommendations = () => {
         return fetch(BackendURL+"/user/recommendation", {
             "method": "GET",
@@ -157,6 +176,55 @@ class EndPoints
             "body": JSON.stringify(Body),
             "credentials": "include"
         }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
+    }
+
+    doAcceptTwoExchange = (exchangeId, bookId) => {
+        const Body = {
+            bookId: bookId
+        };
+
+        return fetch(BackendURL + "/bookexchange/acceptTwo/"+exchangeId, {
+            "headers":  {"Content-Type" : "application/json"},
+            "method" : "POST",
+            "body": JSON.stringify(Body),
+            "credentials": "include"
+        });
+
+    }
+
+    doAcceptOneExchange = (exchangeId) => {
+        return fetch(BackendURL + "/bookexchange/acceptOne/"+exchangeId, {
+            "method" : "POST",
+            "credentials": "include"
+        });
+    }
+
+    doConfirmExchange = (exchangeId) => {
+        return fetch(BackendURL + "/bookexchange/confirmexchange/"+exchangeId, {
+            "method" : "POST",
+            "credentials": "include"
+        });
+    }
+
+    doConfirmRead = (exchangeId) => {
+        return fetch(BackendURL + "/bookexchange/confirmread/"+exchangeId, {
+            "method" : "POST",
+            "credentials": "include"
+        });
+    }
+
+    doConfirmReexchange = (exchangeId) => {
+        return fetch(BackendURL + "/bookexchange/confirmreexchange/"+exchangeId, {
+            "method" : "POST",
+            "credentials": "include"
+        });
+    }
+
+    doCancelExchange = (exchangeId) => {
+        return fetch(BackendURL + "/bookexchange/cancel/"+exchangeId, {
+            "method" : "DELETE",
+            "credentials": "include"
+        });
     }
 
     doGetExchangesByUser = () => {
@@ -186,7 +254,7 @@ class EndPoints
             "method" : "POST",
             "body": JSON.stringify(Body),
             "credentials": "include"
-        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));;        
+        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));      
     }
 
     doGetMessages = (exchangeId)  => {

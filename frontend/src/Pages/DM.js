@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Container, Grid, List, ListItem, ListItemAvatar, Avatar, Typography, Divider, TextField, Button } from '@mui/material';
 import Endpoints from '../Endpoints';
 import { Snackbar } from '@mui/material';
+import { BoldText } from '../Components/BoldText';
+import { BlueButton } from '../Components/BlueButton';
+import { useNavigate } from 'react-router-dom';
 
 // const contacts = [
 //   { id: 1, name: 'maanas', avatar: 'https://via.placeholder.com/50' },
@@ -19,20 +22,28 @@ export function DirectMessaging() {
   const [snackbarText, setSnackbarText]  = useState('');
   const [open, setOpen] = useState(false);
   const [selectedContactId, setSelectedContactId] = useState(contacts[0]?._id);
+  const [exchangeState, setExchangeState] = useState("");
+
+  const navigate = useNavigate();
+
+
+  const getExchangesForUser = () => {
+    Endpoints.doGetExchangesByUser().then(response => {
+      if(!response.ok) {
+          throw "Response Failure"
+      }
+      return response.json();
+      }).then(json => {
+          setContacts(json);
+      }).catch(e => {
+          console.log(e);
+          setSnackbarText("Unable to fetch exchanges");
+          setOpen(true);
+      });
+  }
 
   useEffect(() => {
-    Endpoints.doGetExchangesByUser().then(response => {
-        if(!response.ok) {
-            throw "Response Failure"
-        }
-        return response.json();
-    }).then(json => {
-        setContacts(json);
-    }).catch(e => {
-        console.log(e);
-        setSnackbarText("Unable to fetch exchanges");
-        setOpen(true);
-    });
+    getExchangesForUser();
   }, [])
 
   const handleContactClick = (contactId) => {
@@ -51,9 +62,171 @@ export function DirectMessaging() {
   });
   };
   
+  function getExchangeButtons() {
+    if(!selectedContactId) {
+      return;
+    }
+
+    const curExchange = contacts.find(contact => contact._id === selectedContactId);
+    if(!curExchange) {
+      setSelectedContactId(null);
+      return;
+    }
+    if(curExchange.role != 1 && curExchange.role != 2) {
+      setSnackbarText("Malformed Exchange Data");
+      setOpen(true);
+      return;
+    }
+
+    if(curExchange.role == 1) {
+      if(!curExchange.acceptedTwo) {
+        return (
+          <BoldText text={"Waiting for Other Participant to Accept Exchange"}/>
+        );
+      }
+      else if(!curExchange.acceptedOne) {
+        return (
+          <BlueButton text={"Accept Selected Book"} onClick={acceptOne}/>
+        );
+      }
+    }
+    else if(curExchange.role == 2) {
+      if(!curExchange.acceptedTwo) {
+        return (
+          <BlueButton text="Select Book to Exchange With" onClick = {acceptTwo}/>
+        );
+      }
+      else if(!curExchange.acceptedOne) {
+        return (
+          <BoldText text={"Waiting for Other Participant to Accept Selected Book"}/>
+        );
+      }
+    }
+    
+    if((curExchange.exchangeStatus & curExchange.role) == 0) {
+      return (
+        <BlueButton text={"Confirm Exchange Performed"} onClick={confirmExchange}/>
+      );
+    }
+    else if(curExchange.exchangeStatus != 3) {
+      return (
+        <BoldText text={"Waiting for Other Participant to Confirm Exchange Performed"}/>
+      );
+    }
+    else if((curExchange.readStatus & curExchange.role) == 0) {
+      return (<BlueButton text={"Finished Reading Book"} onClick={confirmRead}/>);
+    }
+    else if(curExchange.readStatus != 3) {
+      return (
+        <BoldText text={"Waiting for Other Participant to Finish Reading Book"}/>
+      );
+    }
+    else if((curExchange.reexchangeStatus & curExchange.role) == 0) {
+      return (<BlueButton text={"Confirm Book Retrieval"} onClick={confirmReexchange}/>);
+    }
+    else if(curExchange.reexchangeStatus != 3) {
+      return (
+        <BoldText text={"Waiting for Other Participant to Confirm Book Retrieval"}/>
+      );
+    }
+    else {
+      return (
+        <BoldText text={"Exchange Complete"}/>
+      );
+    }
+    
+  }
+
+  function getExchangeStateJSX() {
+    if(!selectedContactId) {
+      return null;
+    }
+
+    const curExchange = contacts.find(contact => contact._id === selectedContactId);
+    if(!curExchange) {
+      setSelectedContactId(null);
+      return null;
+    }
+
+    let otherBook = (curExchange.role == 1) ? curExchange.bookOne : curExchange.bookTwo;
+    let myBook = (curExchange.role == 1) ? curExchange.bookTwo : curExchange.bookOne;
+
+    return (
+      <>
+        <BoldText text={"My Book: "+(myBook ? myBook.title : "Unselected")}/>
+        {myBook ? <BlueButton text={"View"} onClick={() => {navigate("/BookInformation/"+myBook._id)}}/> : null}
+        <BoldText text={"Borrowed Book: "+(otherBook ? otherBook.title : "Unselected")}/>
+        {myBook ? <BlueButton text={"View"} onClick={() => {navigate("/BookInformation/"+otherBook._id)}}/> : null}
+        <BlueButton text={"Cancel Exchange"} onClick={cancelExchange}/>
+      </>
+    );
+
+  }
+
   function getOtherUser() {
     return contacts.find(contact => contact._id === selectedContactId)?.user
   }
+
+  //Exchange State Change Functions
+  const exchangeStateChange = (func) => {
+
+    if(!selectedContactId) {
+      return;
+    }
+
+    return func(selectedContactId).then(async (response) => {
+      const json = await response.json();
+      if(!response.ok) {
+        throw json;
+      }
+      return json;
+    }).then(json => {
+      setSnackbarText("Success");
+      setOpen(true);
+    }).catch(e => {
+      console.log(e);
+      setSnackbarText(e["reason"] || "Unable to Perform Action");
+      setOpen(true);
+    });
+  }
+  const acceptOne = () => {
+    exchangeStateChange(Endpoints.doAcceptOneExchange).then(() => {
+      getExchangesForUser();
+    });
+  }
+  const acceptTwo = () => {
+    if(!selectedContactId) return;
+    const curExchange = contacts.find(contact => contact._id === selectedContactId);
+    if(!curExchange) {
+      setSnackbarText("Malformed Exchange Data");
+      setOpen(true);
+      return null;
+    }
+    navigate('/UserBooks/'+curExchange.user._id+'?exchange='+curExchange._id);
+    
+  }
+  const confirmExchange = () => {
+    exchangeStateChange(Endpoints.doConfirmExchange).then(() => {
+      getExchangesForUser();
+    });
+  }
+  const confirmRead = () => {
+    exchangeStateChange(Endpoints.doConfirmRead).then(() => {
+      getExchangesForUser();
+    });
+  }
+  const confirmReexchange = () => {
+    exchangeStateChange(Endpoints.doConfirmReexchange).then(() => {
+      getExchangesForUser();
+    });
+  }
+  const cancelExchange = () => {
+    exchangeStateChange(Endpoints.doCancelExchange).then(() => {
+      setSelectedContactId(null);
+      getExchangesForUser();
+    });
+  }
+
 
   return (
     <Container>
@@ -97,6 +270,8 @@ export function DirectMessaging() {
           </Grid>
         </Grid>
       </Grid>
+      {getExchangeStateJSX()}
+      {getExchangeButtons()}
       <Snackbar
                     open={open}
                     autoHideDuration={60000}

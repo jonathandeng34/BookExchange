@@ -3,6 +3,7 @@ import { Button, Typography, Box, Container, Paper, Snackbar } from '@mui/materi
 import { useNavigate } from 'react-router-dom';
 import '../index.css';
 import Endpoints from '../Endpoints';
+import { BlueButton } from '../Components/BlueButton';
 
 export function Home() {
     const navigate = useNavigate();
@@ -48,6 +49,15 @@ export function Home() {
     const handlePostNewBookClick = () => {
         navigate('/BookListing'); // Adjust this path as necessary
     };
+
+    const handleSeeMyBooks = () => {
+        if(!user["_id"]) {
+            setSnackbarText("User Data Not Loaded");
+            setOpen(true);
+            return;
+        }
+        navigate('/UserBooks/'+user["_id"]);
+    }
 
     return (
         <Container 
@@ -114,23 +124,10 @@ export function Home() {
                 </Typography>
             </Box>
 
-            <Box mt={4}>
-                <Button 
-                    variant="contained" 
-                    onClick={handlePostNewBookClick}
-                    sx={{ 
-                        backgroundColor: '#4D869C', 
-                        color: '#FFFFFF', 
-                        fontFamily: 'var(--secondary-font)', // Use custom font
-                        fontWeight: 600, 
-                        textTransform: 'none',
-                        padding: '10px 20px',
-                        borderRadius: '8px'
-                    }}
-                >
-                    Post new book
-                </Button>
-            </Box>
+            
+            <BlueButton onClick={handlePostNewBookClick} text={"Post new book"}/>
+
+            <BlueButton onClick={handleSeeMyBooks} text={"My Books"}/>
 
             <Box mt={6} component={Paper} sx={{ background: '#FFFFFF', borderRadius: '8px', boxShadow: 3, p: 3, width: '100%', maxWidth: '600px' }}>
                 <Typography 
@@ -150,10 +147,10 @@ export function Home() {
                 {/* This section will list books from the genre. Replace with dynamic content */}
                 <Box mt={2}>
                     {
-                        recommendations.books ? recommendations.books.map(book => (
+                        (recommendations.books && recommendations.books[0]) ? recommendations.books.map(book => (
                             <Typography key = {book._id} onClick={() => navigate('/BookInformation/'+book._id)} variant="body1" sx={{ color: '#000000', mt: 2, fontFamily: 'var(--secondary-font)' }}>{book.title}</Typography>
                         ))
-                        : null
+                        : "No Recommended Books at this Time"
                     }
                    
                 </Box>
