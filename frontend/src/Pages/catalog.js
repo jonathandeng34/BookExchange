@@ -45,7 +45,12 @@ export function Catalog() {
     ];
 
     return (
-        <div className="catalog-page">
+
+
+
+
+
+        <div className="catalog-page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             {/* Search Bar */}
             <TextField
                 label="Search by Title or Author"
@@ -62,7 +67,7 @@ export function Catalog() {
                         </InputAdornment>
                     ),
                 }}
-                style={{ marginBottom: '20px', width: '100%' }}
+                style={{ marginBottom: '20px', width: '100%', maxWidth: '1150px' }}
             />
 
             {/* Genre Filter Dropdown */}
@@ -73,7 +78,7 @@ export function Catalog() {
                 size="small"
                 value={selectedGenre}
                 onChange={(e) => setSelectedGenre(e.target.value)}
-                style={{ marginBottom: '20px', width: '100%' }}
+                style={{ marginBottom: '20px', width: '100%', maxWidth: '1150px' }}
             >
                 <MenuItem value="">All</MenuItem>
                 {genres.map((genre, index) => (
