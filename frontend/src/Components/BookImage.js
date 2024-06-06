@@ -18,7 +18,13 @@ export function BookImage(props) {
                         WebkitUserSelect: "none",
                         margin: "auto",
                         backgroundColor: "hsl(0, 0%, 90%)",
-                        transition: "background-color 300ms"
+                        transition: "background-color 300ms",
+                        width: "177px",  //304 x 500
+                        height: "250px", 
+                        border: "4px solid #000", 
+                        borderRadius: "10px", 
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                        boxSizing: "border-box"
                     }}
                     src={(props.book && props.book._id) ? "http://localhost:4000/book/downloadImage/"+props.book._id : null}
                     alt="Image"

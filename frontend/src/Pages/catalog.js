@@ -46,11 +46,6 @@ export function Catalog() {
     ];
 
     return (
-
-
-
-
-
         <div className="catalog-page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             {/* Search Bar */}
             <TextField
@@ -88,7 +83,9 @@ export function Catalog() {
             </TextField>
 
             {/* Display Filtered Books */}
-            <BookContainer books={filteredBooks}/>
+            <div style={{ width: '100%', maxWidth: '1150px', marginLeft: '100px' }}>
+                <BookContainer books={filteredBooks} />
+            </div>
 
             <Snackbar
                     open={open}

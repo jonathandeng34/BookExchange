@@ -18,13 +18,15 @@ export function BookContainer({ books, exchange }) {
     return (
         <Grid container spacing={2}>
                 {books.map((book, index) => (
-                    <Grid item xs={4} key={index}>
-                        <div className="book-container" onClick={() => { navigate(getBookURL(book._id)); }}>
+                    <Grid item xs={12} sm={6} md={4} key={index}>
+                        <div className="book-container" onClick={() => { navigate(getBookURL(book._id)); }} >
                             {/*<BookIcon fontSize="large" />*/}
                             <BookImage book={book}/>
+                            <div style={{ textAlign: 'center' }}>
                             <Typography variant="h6">{book.title}</Typography>
                             <Typography variant="subtitle1">{book.author}</Typography>
                             <Typography variant="subtitle2">{book.genre}</Typography>
+                            </div>
                         </div>
                     </Grid>
                 ))}
