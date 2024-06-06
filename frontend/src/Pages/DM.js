@@ -105,6 +105,10 @@ export function DirectMessaging({ setLoggedIn }) {
         getMessagesForUser();
       }
     })
+
+    socket?.on("refresh-exchanges", () => {
+      getExchangesForUser();
+    })
   }, [socket, selectedContactId, messages, contacts])
 
   const handleSubmit = (e) => {
