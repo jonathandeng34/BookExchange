@@ -219,14 +219,22 @@ export function BookInformation(props) {
       <Typography variant="h5" gutterBottom style={styles.sectionTitle}>
         Comments
       </Typography>
-      <div>
-        {comments.length == 0 ? "No Comments" : comments.map(comment => {
-          return (
-          <div key={comment._id}>
-            {comment.userId.username} rated {comment.starRating} and said: {comment.commentText}
-          </div>);
-        })}
-      </div>
+      <div style={{ marginTop: '20px', width: "100%", maxWidth: '600px'}}>
+        {comments.length === 0 ? (
+          <div>No Comments</div>
+        ) : (
+          comments.map(comment => (
+            <div key={comment._id} style={{ marginBottom: '10px', width: '100%', overflow: 'hidden' }}>
+              <div style={{ fontWeight: 'bold' }}>
+                {comment.userId.username} rated {book.title} {comment.starRating} out of 5 stars and said:
+              </div>
+              <div style={{ overflowWrap: 'break-word' }}>
+                {comment.commentText}
+              </div>
+            </div>
+          ))
+        )}
+    </div>  
 
       { query.get("exchange") ? <Button variant="contained" style={styles.button} onClick={acceptExchange}>
         Use for Book Exchange

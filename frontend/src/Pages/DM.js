@@ -221,14 +221,14 @@ export function DirectMessaging({ setLoggedIn }) {
     let myBook = (curExchange.role == 1) ? curExchange.bookTwo : curExchange.bookOne;
   
     return (
-      <div style={{ flex: 1, marginLeft: '430px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', position: 'absolute', top: 100, right: 300}}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-          <BoldText text={"My Book: " + (myBook ? myBook.title : "Unselected")} />
+      <div style={{ flex: 1, marginLeft: '430px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', position: 'flex', top: 0, right: 500}}>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', justifyContent: "space-between"}}>
+          <BoldText text={"The book that I am exchanging to " + getOtherUser().username + ": " + (myBook ? myBook.title : "Unselected")} style={{ marginRight: "40px" }}/>
           {myBook ? 
-          <BlueButton text={"View"} onClick={() => { navigate("/BookInformation/" + myBook._id) }} style={{ marginLeft: "50px" }}/> : null}
+          <BlueButton text={"View"} onClick={() => { navigate("/BookInformation/" + myBook._id) }} style={{ position: 'flex', top: 150, right: 300}}/> : null}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-          <BoldText text={"Borrowed Book: " + (otherBook ? otherBook.title : "Unselected")} />
+          <BoldText text={"The book I'm receiving from " + getOtherUser().username + ": " + (otherBook ? otherBook.title : "Unselected")} />
           {otherBook ? <BlueButton text={"View"} onClick={() => { navigate("/BookInformation/" + otherBook._id) }} /> : null}
         </div>
         <BlueButton text={"Cancel Exchange"} onClick={cancelExchange} />
@@ -333,21 +333,25 @@ export function DirectMessaging({ setLoggedIn }) {
               </div>
             ))}
           </div>
-          <Divider style={{ margin: '20px 0' }} />
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={10}>
-              <TextField fullWidth id="messagebox" placeholder="Type your message..." variant="outlined" onChange={(e) => setText(e.target.value)} />
-            </Grid>
-            <Grid item xs={2}>
-              <Button variant="contained" color="primary" fullWidth onClick={handleSubmit}>Send</Button>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginTop: '20px' }}>
-      {getExchangeStateJSX()}
-      {getExchangeButtons()}
-      </div>
+              
+                  <Divider style={{ margin: '20px 0' }} />
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={10}>
+                      <TextField fullWidth id="messagebox" placeholder="Type your message..." variant="outlined" onChange={(e) => setText(e.target.value)} />
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Button variant="contained" color="primary" fullWidth onClick={handleSubmit}>Send</Button>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginTop: '2px' }}>
+                  {getExchangeStateJSX()}
+                  {getExchangeButtons()}
+                  </div>
+
+      
       <Snackbar
                     open={open}
                     autoHideDuration={60000}
