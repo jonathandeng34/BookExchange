@@ -42,7 +42,7 @@ function App() {
     <Router>
       <Routes>
         <Route element={<Layout loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>}> 
-        <Route path="/" element = {<Login setLoggedIn={setLoggedIn}/>}/>
+        <Route path="/" element = {loggedIn ? (<Home setLoggedIn={setLoggedIn}/>) : (<Login setLoggedIn={setLoggedIn}/>)}/>
           <Route path="/Home" element={<Home setLoggedIn={setLoggedIn}/>}/>
           <Route path="/Login" element={<Login setLoggedIn={setLoggedIn}/>}/>
           <Route path="/BookInformation/:bookId" element = {<BookInformation setLoggedIn={setLoggedIn}/>}/>
