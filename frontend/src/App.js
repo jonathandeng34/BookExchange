@@ -43,7 +43,7 @@ function App() {
       <Routes>
         <Route element={<Layout loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>}> 
         <Route path="/" element = {<Catalog/>}/>
-          <Route path="/Home" element={<Home/>}/>
+          <Route path="/Home" element={<Home setLoggedIn={setLoggedIn}/>}/>
           <Route path="/Login" element={<Login setLoggedIn={setLoggedIn}/>}/>
           <Route path="/BookInformation/:bookId" element = {<BookInformation setLoggedIn={setLoggedIn}/>}/>
           <Route path="/Catalog" element = {<Catalog/>}/>
