@@ -3,7 +3,7 @@
 const BackendURL = process.env.REACT_APP_BACKEND_URL;
 
 const isLoggedInMiddleware = (response, setLoggedIn) => {
-    if(response.status == 401) {
+    if(!document.cookie.includes("jwt")) {
         setLoggedIn(false);
     }
     return response;
