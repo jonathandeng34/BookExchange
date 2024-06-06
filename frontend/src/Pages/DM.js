@@ -144,7 +144,9 @@ export function DirectMessaging({ setLoggedIn }) {
     if(curExchange.role == 1) {
       if(!curExchange.acceptedTwo) {
         return (
-          <BoldText text={"Waiting for Other Participant to Accept Exchange"}/>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '300px'}}>
+            <BoldText text={"Waiting for Other Participant to Accept Exchange"} />
+          </div>
         );
       }
       else if(!curExchange.acceptedOne) {
@@ -156,12 +158,16 @@ export function DirectMessaging({ setLoggedIn }) {
     else if(curExchange.role == 2) {
       if(!curExchange.acceptedTwo) {
         return (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '300px'}}>
           <BlueButton text="Select Book to Exchange With" onClick = {acceptTwo}/>
+          </div>
         );
       }
       else if(!curExchange.acceptedOne) {
         return (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '300px'}}>
           <BoldText text={"Waiting for Other Participant to Accept Selected Book"}/>
+          </div>
         );
       }
     }
@@ -201,30 +207,35 @@ export function DirectMessaging({ setLoggedIn }) {
   }
 
   function getExchangeStateJSX() {
-    if(!selectedContactId) {
+    if (!selectedContactId) {
       return null;
     }
-
+  
     const curExchange = contacts.find(contact => contact._id === selectedContactId);
-    if(!curExchange) {
+    if (!curExchange) {
       setSelectedContactId(null);
       return null;
     }
-
+  
     let otherBook = (curExchange.role == 1) ? curExchange.bookOne : curExchange.bookTwo;
     let myBook = (curExchange.role == 1) ? curExchange.bookTwo : curExchange.bookOne;
-
+  
     return (
-      <>
-        <BoldText text={"My Book: "+(myBook ? myBook.title : "Unselected")}/>
-        {myBook ? <BlueButton text={"View"} onClick={() => {navigate("/BookInformation/"+myBook._id)}}/> : null}
-        <BoldText text={"Borrowed Book: "+(otherBook ? otherBook.title : "Unselected")}/>
-        {myBook ? <BlueButton text={"View"} onClick={() => {navigate("/BookInformation/"+otherBook._id)}}/> : null}
-        <BlueButton text={"Cancel Exchange"} onClick={cancelExchange}/>
-      </>
+      <div style={{ flex: 1, marginLeft: '430px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', position: 'absolute', top: 100, right: 300}}>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+          <BoldText text={"My Book: " + (myBook ? myBook.title : "Unselected")} />
+          {myBook ? 
+          <BlueButton text={"View"} onClick={() => { navigate("/BookInformation/" + myBook._id) }} style={{ marginLeft: "50px" }}/> : null}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+          <BoldText text={"Borrowed Book: " + (otherBook ? otherBook.title : "Unselected")} />
+          {otherBook ? <BlueButton text={"View"} onClick={() => { navigate("/BookInformation/" + otherBook._id) }} /> : null}
+        </div>
+        <BlueButton text={"Cancel Exchange"} onClick={cancelExchange} />
+      </div>
     );
-
   }
+  
 
   function getOtherUser() {
     return contacts.find(contact => contact._id === selectedContactId)?.user
@@ -333,8 +344,10 @@ export function DirectMessaging({ setLoggedIn }) {
           </Grid>
         </Grid>
       </Grid>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginTop: '20px' }}>
       {getExchangeStateJSX()}
       {getExchangeButtons()}
+      </div>
       <Snackbar
                     open={open}
                     autoHideDuration={60000}

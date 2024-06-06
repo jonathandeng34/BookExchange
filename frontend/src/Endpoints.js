@@ -250,6 +250,7 @@ class EndPoints
             content: content
         };
 
+        console.log("this is the exchange id: " + exchangeId);
         return fetch(BackendURL+ '/message/send/' + exchangeId, {
             "headers":  {"Content-Type" : "application/json"},
             "method" : "POST",
