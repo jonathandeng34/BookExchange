@@ -176,7 +176,7 @@ export function BookInformation(props) {
       }
       return json;
     }).then(json => {
-      navigate('/DirectMessage');
+      navigate('/DirectMessage?selected='+query.get("exchange"));
     }).catch(e => {
       console.log(e);
       setSnackbarText(e["reason"] || "Unable to Start Exchange");

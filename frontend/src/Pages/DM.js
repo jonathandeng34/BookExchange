@@ -51,8 +51,14 @@ export function DirectMessaging({ setLoggedIn }) {
       });
   }
 
-  const getMessagesForUser = (contactId) => {
-    Endpoints.doGetMessages(contactId).then(response => {
+  const getMessagesForUser = () => {
+
+    if(!selectedContactId) {
+      setMessages([]);
+      return;
+    }
+
+    Endpoints.doGetMessages(selectedContactId).then(response => {
       if(!response.ok) {
           throw "Response Failure"
       }
@@ -90,15 +96,24 @@ export function DirectMessaging({ setLoggedIn }) {
   }, [])
 
   useEffect(() => {
+    getMessagesForUser();
+  }, [selectedContactId]);
+
+  useEffect(() => {
     socket?.on("message", (newMessage) => {
       if (newMessage.exchangeID.toString() == selectedContactId) {
-        getMessagesForUser(selectedContactId);
+        getMessagesForUser();
       }
     })
   }, [socket, selectedContactId, messages, contacts])
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if(!selectedContactId) {
+      setSnackbarText("Please Select a DM!");
+      setOpen(true);
+      return;
+    }
     if(!text) {
       setSnackbarText("Please type something to send!");
       setOpen(true);
@@ -122,7 +137,6 @@ export function DirectMessaging({ setLoggedIn }) {
 
   const handleContactClick = (contactId) => {
     setSelectedContactId(contactId);
-    getMessagesForUser(contactId);
   };
   
   function getExchangeButtons() {
@@ -323,12 +337,12 @@ export function DirectMessaging({ setLoggedIn }) {
             ))}
           </div>
           <Divider style={{ margin: '20px 0' }} />
-          <Grid container spacing={2} alignItems="center">
+          <Grid container spacing={2} alignItems="center" component="form" onSubmit={handleSubmit} noValidate>
             <Grid item xs={10}>
               <TextField fullWidth id="messagebox" placeholder="Type your message..." variant="outlined" onChange={(e) => setText(e.target.value)} />
             </Grid>
             <Grid item xs={2}>
-              <Button variant="contained" color="primary" fullWidth onClick={handleSubmit}>Send</Button>
+              <Button variant="contained" color="primary" fullWidth type="submit">Send</Button>
             </Grid>
           </Grid>
         </Grid>
