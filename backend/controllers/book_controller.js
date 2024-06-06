@@ -352,7 +352,7 @@ router.post('/comment/:id', validateSchema(BookCommentSchema), validateID(), val
             //The user hasn't exchanged for this book yet, so they can't send a comment
             res.status(400);
             res.json({
-                "reason": "You haven't exchanged for this book yet!"
+                "reason": "You haven't made a complete exchange for this book yet!"
             });
             return;
         }

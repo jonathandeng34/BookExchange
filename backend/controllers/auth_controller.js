@@ -36,6 +36,13 @@ router.post('/register', validateSchema(RegisterSchema), async (req, res) => {
         });
         return;
     }
+    if(req.body.password.length < 5) {
+        res.status(400);
+        res.json({
+            "reason": "Please ensure your password is at least 5 characters long"
+        });
+        return;
+    }
 
     //Make sure the given email doesn't already exist in the database
 
