@@ -9,10 +9,16 @@ import { isIDValid, validateID } from '../frontend_models/validate_schema.js'
 import validateSchema from '../frontend_models/validate_schema.js'
 
 import { CreateExchangeSchema, AcceptTwoSchema } from '../frontend_models/book_exchange_schemas.js';
+import {io, userSocketId} from '../socket.js'
 
 const router = express.Router();
 
-
+const emitExchangeChangeEvent = (receiver) => {
+    const recvSocket = userSocketId(receiver);
+    if(recvSocket) {
+        io.to(recvSocket).emit("refresh-exchanges");
+    }
+}
 
 router.get('/get/:id', validateID(), (req, res) => {
     BookExchange.findById(req.params.id).then(bookExchange => {
@@ -112,6 +118,7 @@ router.post('/createExchange', validateSchema(CreateExchangeSchema), validateJWT
         });
 
         newExchange.save().then(doc => {
+            emitExchangeChangeEvent(book.bookOwner);
             res.json(doc);
         });
     })
@@ -189,6 +196,7 @@ router.post('/acceptTwo/:id', validateSchema(AcceptTwoSchema), validateID(), val
                 bookTwo: new mongoose.Types.ObjectId(req.body.bookId)
             });
         
+        emitExchangeChangeEvent(exchange.participantOne);
         res.json(doc);
 
     }).catch(e => {
@@ -240,6 +248,7 @@ router.post('/acceptOne/:id', validateID(), validateJWT(), (req, res) => {
             }
             );
         
+        emitExchangeChangeEvent(exchange.participantTwo);
         res.json(doc);
 
     }).catch(e => {
@@ -275,11 +284,14 @@ router.post('/confirmexchange/:id', validateID(), validateJWT(), (req, res) => {
 
         let updateBody = {};
 
+        let receiver;
         if(exchange.participantOne.toString() == req.userId) {
             updateBody["exchangeStatus"] = exchange.exchangeStatus | 1;
+            receiver = exchange.participantTwo;
         }
         else if(exchange.participantTwo.toString() == req.userId) {
             updateBody["exchangeStatus"] = exchange.exchangeStatus | 2;
+            receiver = exchange.participantOne;
         }
         else {
             res.status(400);
@@ -291,6 +303,8 @@ router.post('/confirmexchange/:id', validateID(), validateJWT(), (req, res) => {
 
         const doc = await BookExchange.findByIdAndUpdate(exchange._id,
             updateBody, {new: true});
+
+        emitExchangeChangeEvent(receiver);
         
         res.json(doc);
 
@@ -327,11 +341,14 @@ router.post('/confirmread/:id', validateID(), validateJWT(), (req, res) => {
 
         let updateBody = {};
 
+        let receiver;
         if(exchange.participantOne.toString() == req.userId) {
             updateBody["readStatus"] = exchange.readStatus | 1;
+            receiver = exchange.participantTwo;
         }
         else if(exchange.participantTwo.toString() == req.userId) {
             updateBody["readStatus"] = exchange.readStatus | 2;
+            receiver = exchange.participantOne;
         }
         else {
             res.status(400);
@@ -343,6 +360,8 @@ router.post('/confirmread/:id', validateID(), validateJWT(), (req, res) => {
 
         const doc = await BookExchange.findByIdAndUpdate(exchange._id,
             updateBody, {new: true});
+
+        emitExchangeChangeEvent(receiver);
         
         res.json(doc);
 
@@ -372,11 +391,14 @@ router.post('/confirmreexchange/:id', validateID(), validateJWT(), (req, res) =>
 
         let updateBody = {};
 
+        let receiver;
         if(exchange.participantOne.toString() == req.userId) {
             updateBody["reexchangeStatus"] = exchange.reexchangeStatus | 1;
+            receiver = exchange.participantTwo;
         }
         else if(exchange.participantTwo.toString() == req.userId) {
             updateBody["reexchangeStatus"] = exchange.reexchangeStatus | 2;
+            receiver = exchange.participantOne;
         }
         else {
             res.status(400);
@@ -423,9 +445,11 @@ router.post('/confirmreexchange/:id', validateID(), validateJWT(), (req, res) =>
             res.json({
                 "reason": "Exchange Complete"
             });
+            emitExchangeChangeEvent(receiver);
             return;
         }
         
+        emitExchangeChangeEvent(receiver);
         res.json(doc);
 
     }).catch(e => {
@@ -454,11 +478,13 @@ router.delete('/cancel/:id', validateID() ,validateJWT(), async (req, res) => {
 
 
 
-    BookExchange.findByIdAndDelete(req.params.id).then(async () => {
+    BookExchange.findByIdAndDelete(req.params.id).then(async (doc) => {
         res.status(200);
         res.json({
             "reason": "Exchange Cancelled"
         });
+        emitExchangeChangeEvent(doc.participantOne);
+        emitExchangeChangeEvent(doc.participantTwo);
     }).catch(e => {
         console.log(e);
         res.sendStatus(400);

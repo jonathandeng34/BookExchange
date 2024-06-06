@@ -44,6 +44,7 @@ export function CreateAccount() {
         if(formData.password !== formData.confirmPassword) {
             setSnackbarText("Please Ensure you Typed your Password Correctly");
             setOpen(true);
+            setLoading(false);
             return;
         }
 
@@ -61,12 +62,6 @@ export function CreateAccount() {
             setOpen(true);
             setLoading(false);
         });
-
-        // Mock API call
-        setTimeout(() => {
-            setLoading(false);
-            setOpen(true);
-        }, 2000);
     };
 
     return (
