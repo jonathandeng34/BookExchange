@@ -138,6 +138,12 @@ router.post('/login', validateSchema(LoginSchema), (req, res) => {
                     sameSite: "strict",
                     secure: true
                 });
+                res.cookie("jwtDummy", "Dummy Data", {
+                    maxAge: 3 * 24 * 60 * 60 * 1000,
+                    httpOnly: false,
+                    sameSite: "strict",
+                    secure: true
+                });
                 res.status(201);
                 res.json({
                     "reason": "Login Success"

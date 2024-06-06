@@ -17,7 +17,7 @@ import io from 'socket.io-client';
 //   { id: 2, senderId: 2, content: 'Hi there!', timestamp: '9:05 AM' },
 // ];
 
-export function DirectMessaging() {
+export function DirectMessaging({ setLoggedIn }) {
   const [contacts, setContacts] = useState([]);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
@@ -63,7 +63,7 @@ export function DirectMessaging() {
 
   useEffect(() => {
     getExchangesForUser();
-    Endpoints.doGetSelf().then(async (response) => {
+    Endpoints.doGetSelf(setLoggedIn).then(async (response) => {
       const json = await response.json();
       if(!response.ok) {
           throw json;
@@ -237,7 +237,7 @@ export function DirectMessaging() {
       return;
     }
 
-    return func(selectedContactId).then(async (response) => {
+    return func(selectedContactId, setLoggedIn).then(async (response) => {
       const json = await response.json();
       if(!response.ok) {
         throw json;

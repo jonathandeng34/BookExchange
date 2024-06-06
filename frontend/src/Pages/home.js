@@ -5,7 +5,7 @@ import '../index.css';
 import Endpoints from '../Endpoints';
 import { BlueButton } from '../Components/BlueButton';
 
-export function Home() {
+export function Home({ setLoggedIn }) {
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [snackbarText, setSnackbarText] = useState("");
@@ -13,7 +13,7 @@ export function Home() {
     const [recommendations, setRecommendations] = useState({});
 
     useEffect(() => {
-        Endpoints.doGetSelf().then(async (response) => {
+        Endpoints.doGetSelf(setLoggedIn).then(async (response) => {
             const json = await response.json();
             if(!response.ok) {
                 throw json;
@@ -26,7 +26,7 @@ export function Home() {
             setOpen(true);
         });
 
-        Endpoints.doGetRecommendations().then(async (response) => {
+        Endpoints.doGetRecommendations(setLoggedIn).then(async (response) => {
             const json = await response.json();
             if(!response.ok) {
                 throw json;

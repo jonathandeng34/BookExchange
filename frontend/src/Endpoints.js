@@ -3,7 +3,7 @@
 const BackendURL = process.env.REACT_APP_BACKEND_URL;
 
 const isLoggedInMiddleware = (response, setLoggedIn) => {
-    if(response.status == 401) {
+    if(!document.cookie.includes("jwt")) {
         setLoggedIn(false);
     }
     return response;
@@ -145,11 +145,11 @@ class EndPoints
         });
     };
 
-    doGetSelf = () => {
+    doGetSelf = (setLoggedIn) => {
         return fetch(BackendURL+"/user/getself", {
             "method": "GET",
             "credentials": "include"
-        });
+        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
     };
 
     doGetUser = (userId) => {
@@ -158,11 +158,11 @@ class EndPoints
         });
     };
 
-    doGetRecommendations = () => {
+    doGetRecommendations = (setLoggedIn) => {
         return fetch(BackendURL+"/user/recommendation", {
             "method": "GET",
             "credentials": "include"
-        });
+        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
     };
 
     doStartExchange = (bookId, setLoggedIn) => {
@@ -178,7 +178,7 @@ class EndPoints
         }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
     }
 
-    doAcceptTwoExchange = (exchangeId, bookId) => {
+    doAcceptTwoExchange = (exchangeId, bookId, setLoggedIn) => {
         const Body = {
             bookId: bookId
         };
@@ -188,43 +188,43 @@ class EndPoints
             "method" : "POST",
             "body": JSON.stringify(Body),
             "credentials": "include"
-        });
+        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
 
     }
 
-    doAcceptOneExchange = (exchangeId) => {
+    doAcceptOneExchange = (exchangeId, setLoggedIn) => {
         return fetch(BackendURL + "/bookexchange/acceptOne/"+exchangeId, {
             "method" : "POST",
             "credentials": "include"
-        });
+        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
     }
 
-    doConfirmExchange = (exchangeId) => {
+    doConfirmExchange = (exchangeId, setLoggedIn) => {
         return fetch(BackendURL + "/bookexchange/confirmexchange/"+exchangeId, {
             "method" : "POST",
             "credentials": "include"
-        });
+        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
     }
 
-    doConfirmRead = (exchangeId) => {
+    doConfirmRead = (exchangeId, setLoggedIn) => {
         return fetch(BackendURL + "/bookexchange/confirmread/"+exchangeId, {
             "method" : "POST",
             "credentials": "include"
-        });
+        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
     }
 
-    doConfirmReexchange = (exchangeId) => {
+    doConfirmReexchange = (exchangeId, setLoggedIn) => {
         return fetch(BackendURL + "/bookexchange/confirmreexchange/"+exchangeId, {
             "method" : "POST",
             "credentials": "include"
-        });
+        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
     }
 
-    doCancelExchange = (exchangeId) => {
+    doCancelExchange = (exchangeId, setLoggedIn) => {
         return fetch(BackendURL + "/bookexchange/cancel/"+exchangeId, {
             "method" : "DELETE",
             "credentials": "include"
-        });
+        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
     }
 
     doGetExchangesByUser = () => {
@@ -242,7 +242,7 @@ class EndPoints
             "method" : "POST",
             "body": formData,
             "credentials": "include"
-        });
+        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
     }
 
     doSendMessage = (exchangeId, content) => {

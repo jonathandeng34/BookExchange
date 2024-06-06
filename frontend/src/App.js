@@ -43,13 +43,13 @@ function App() {
       <Routes>
         <Route element={<Layout loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>}> 
         <Route path="/" element = {<Login/>}/>
-          <Route path="/Home" element={<Home/>}/>
+          <Route path="/Home" element={<Home setLoggedIn={setLoggedIn}/>}/>
           <Route path="/Login" element={<Login setLoggedIn={setLoggedIn}/>}/>
           <Route path="/BookInformation/:bookId" element = {<BookInformation setLoggedIn={setLoggedIn}/>}/>
           <Route path="/Catalog" element = {<Catalog/>}/>
           <Route path="/CreateAccount" element = {<CreateAccount/>}/>
           <Route path="/ResetPassword" element = {<ResetPassword/>}/>
-          <Route path="/DirectMessage" element = {<DirectMessaging/>}/>
+          <Route path="/DirectMessage" element = {<DirectMessaging setLoggedIn={setLoggedIn}/>}/>
           <Route path="/Verification" element = {<Verification/>}/>
           <Route path="/BookListing" element = {<BookListing setLoggedIn={setLoggedIn}/>}/>
           <Route path="/UserBooks/:userId" element = {<BooksByUser/>}/>

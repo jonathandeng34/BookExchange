@@ -68,6 +68,15 @@ export function Login(props) {
                 }
                 
             }
+
+            //Make sure the dummy cookie exists
+            if(!document.cookie.includes("jwt")) {
+                setSnackbarText("Please Make Sure you have Cookies Enabled");
+                setOpen(true);
+                setLoading(false);
+                return;
+            }
+
             props.setLoggedIn(true);
             navigate('/Home');
         }).catch(
