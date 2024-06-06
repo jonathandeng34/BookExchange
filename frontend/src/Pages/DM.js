@@ -6,6 +6,7 @@ import { BoldText } from '../Components/BoldText';
 import { BlueButton } from '../Components/BlueButton';
 import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
+import { useQuery } from '../utils.js';
 
 // const contacts = [
 //   { id: 1, name: 'maanas', avatar: 'https://via.placeholder.com/50' },
@@ -18,26 +19,30 @@ import io from 'socket.io-client';
 // ];
 
 export function DirectMessaging({ setLoggedIn }) {
+
   const [contacts, setContacts] = useState([]);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const [snackbarText, setSnackbarText]  = useState('');
   const [open, setOpen] = useState(false);
-  const [selectedContactId, setSelectedContactId] = useState(contacts[0]?._id);
+  const [selectedContactId, setSelectedContactId] = useState(null);
   const [socket, setSocket] = useState(null);
-  let myId = '';
 
 
   const navigate = useNavigate();
+  const query = useQuery();
 
 
-  const getExchangesForUser = () => {
+  const getExchangesForUser = (useDefaultId = false) => {
     Endpoints.doGetExchangesByUser().then(response => {
       if(!response.ok) {
           throw "Response Failure"
       }
       return response.json();
       }).then(json => {
+          if(useDefaultId) {
+            setSelectedContactId(query.get("selected"));
+          }
           setContacts(json);
       }).catch(e => {
           console.log(e);
@@ -54,7 +59,6 @@ export function DirectMessaging({ setLoggedIn }) {
       return response.json();
     }).then(json => {
         setMessages(json);
-        console.log(json);
     }).catch(e => {
         console.log(e);
         setSnackbarText("Unable to fetch messages");
@@ -62,7 +66,7 @@ export function DirectMessaging({ setLoggedIn }) {
   }
 
   useEffect(() => {
-    getExchangesForUser();
+    getExchangesForUser(true);
     Endpoints.doGetSelf(setLoggedIn).then(async (response) => {
       const json = await response.json();
       if(!response.ok) {
@@ -70,11 +74,10 @@ export function DirectMessaging({ setLoggedIn }) {
       }
       return json;
     }).then(json => {
-        myId = json["_id"];
+        return json["_id"];
     }).catch(e => {
         //Do Nothing
-    }).then(() => {
-    console.log(myId);
+    }).then((myId) => {
     const socket = io(process.env.REACT_APP_BACKEND_URL, {
       query: {
         userId: myId
@@ -88,7 +91,6 @@ export function DirectMessaging({ setLoggedIn }) {
 
   useEffect(() => {
     socket?.on("message", (newMessage) => {
-      console.log(newMessage)
       if (newMessage.exchangeID.toString() == selectedContactId) {
         getMessagesForUser(selectedContactId);
       }
@@ -102,7 +104,6 @@ export function DirectMessaging({ setLoggedIn }) {
       setOpen(true);
       return;
     }
-    console.log(selectedContactId);
     Endpoints.doSendMessage(selectedContactId, text).then(async (response) => {
         if(!response.ok) {
           const json = await response.json();
@@ -110,7 +111,6 @@ export function DirectMessaging({ setLoggedIn }) {
         }
         return response.json();
     }).then(async (json) => {
-      console.log(json);
       document.getElementById("messagebox").value = '';
       setText('');
       setMessages([...messages,json]);
@@ -219,7 +219,7 @@ export function DirectMessaging({ setLoggedIn }) {
         <BoldText text={"My Book: "+(myBook ? myBook.title : "Unselected")}/>
         {myBook ? <BlueButton text={"View"} onClick={() => {navigate("/BookInformation/"+myBook._id)}}/> : null}
         <BoldText text={"Borrowed Book: "+(otherBook ? otherBook.title : "Unselected")}/>
-        {myBook ? <BlueButton text={"View"} onClick={() => {navigate("/BookInformation/"+otherBook._id)}}/> : null}
+        {otherBook ? <BlueButton text={"View"} onClick={() => {navigate("/BookInformation/"+otherBook._id)}}/> : null}
         <BlueButton text={"Cancel Exchange"} onClick={cancelExchange}/>
       </>
     );
