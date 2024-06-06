@@ -93,15 +93,16 @@ router.post('/send/:id', validateID(), validateSchema(MessageSchema), validateJW
                 exchangeID: req.params.id,
                 content: req.body.content,
             });
-
+            
             const recvSocket = userSocketId(receiver);
             if (recvSocket) {
-                io.to(recvSocket).emit("message", newMessage);
+                io.to(recvSocket).emit("message", await newMessage.populate('senderID', '_id username'));
             }
 
             newMessage.save().then(doc => {
                 res.json(doc);
             });
+
     } catch (e) {
         console.log(e);
         res.status(500).send("Internal Server Error");      

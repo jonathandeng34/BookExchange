@@ -245,16 +245,17 @@ class EndPoints
         });
     }
 
-    doSendMessage = (exchangeId, content, setLoggedIn) => {
+    doSendMessage = (exchangeId, content) => {
         const Body = {
             content: content
         };
 
-        fetch(BackendURL+"/message/send/"+exchangeId, {
+        return fetch(BackendURL+ '/message/send/' + exchangeId, {
+            "headers":  {"Content-Type" : "application/json"},
             "method" : "POST",
             "body": JSON.stringify(Body),
             "credentials": "include"
-        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));      
+        });      
     }
 
     doGetMessages = (exchangeId)  => {

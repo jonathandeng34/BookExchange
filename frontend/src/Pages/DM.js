@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Container, Grid, List, ListItem, ListItemAvatar, Avatar, Typography, Divider, TextField, Button } from '@mui/material';
 import Endpoints from '../Endpoints';
 import { Snackbar } from '@mui/material';
 import { BoldText } from '../Components/BoldText';
 import { BlueButton } from '../Components/BlueButton';
 import { useNavigate } from 'react-router-dom';
+import io from 'socket.io-client';
 
 // const contacts = [
 //   { id: 1, name: 'maanas', avatar: 'https://via.placeholder.com/50' },
@@ -19,10 +20,13 @@ import { useNavigate } from 'react-router-dom';
 export function DirectMessaging() {
   const [contacts, setContacts] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [text, setText] = useState('');
   const [snackbarText, setSnackbarText]  = useState('');
   const [open, setOpen] = useState(false);
   const [selectedContactId, setSelectedContactId] = useState(contacts[0]?._id);
-  const [exchangeState, setExchangeState] = useState("");
+  const [socket, setSocket] = useState(null);
+  let myId = '';
+
 
   const navigate = useNavigate();
 
@@ -42,24 +46,83 @@ export function DirectMessaging() {
       });
   }
 
-  useEffect(() => {
-    getExchangesForUser();
-  }, [])
-
-  const handleContactClick = (contactId) => {
-    setSelectedContactId(contactId);
+  const getMessagesForUser = (contactId) => {
     Endpoints.doGetMessages(contactId).then(response => {
       if(!response.ok) {
           throw "Response Failure"
       }
       return response.json();
-  }).then(json => {
-      setMessages(json);
-      console.log(json);
-  }).catch(e => {
-      console.log(e);
-      setSnackbarText("Unable to fetch messages");
+    }).then(json => {
+        setMessages(json);
+        console.log(json);
+    }).catch(e => {
+        console.log(e);
+        setSnackbarText("Unable to fetch messages");
+    });
+  }
+
+  useEffect(() => {
+    getExchangesForUser();
+    Endpoints.doGetSelf().then(async (response) => {
+      const json = await response.json();
+      if(!response.ok) {
+          throw json;
+      }
+      return json;
+    }).then(json => {
+        myId = json["_id"];
+    }).catch(e => {
+        //Do Nothing
+    }).then(() => {
+    console.log(myId);
+    const socket = io(process.env.REACT_APP_BACKEND_URL, {
+      query: {
+        userId: myId
+      }
+    });
+    setSocket(socket);
+
+    return () => socket.close()
   });
+  }, [])
+
+  useEffect(() => {
+    socket?.on("message", (newMessage) => {
+      console.log(newMessage)
+      if (newMessage.exchangeID.toString() == selectedContactId) {
+        getMessagesForUser(selectedContactId);
+      }
+    })
+  }, [socket, selectedContactId, messages, contacts])
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if(!text) {
+      setSnackbarText("Please type something to send!");
+      setOpen(true);
+      return;
+    }
+    console.log(selectedContactId);
+    Endpoints.doSendMessage(selectedContactId, text).then(async (response) => {
+        if(!response.ok) {
+          const json = await response.json();
+          throw json;
+        }
+        return response.json();
+    }).then(async (json) => {
+      console.log(json);
+      document.getElementById("messagebox").value = '';
+      setText('');
+      setMessages([...messages,json]);
+    }).catch(e => {
+      setSnackbarText(e["reason"] || "Internal Server Error");
+      setOpen(true);
+    });
+  }
+
+  const handleContactClick = (contactId) => {
+    setSelectedContactId(contactId);
+    getMessagesForUser(contactId);
   };
   
   function getExchangeButtons() {
@@ -255,17 +318,17 @@ export function DirectMessaging() {
             {messages.map(message => (
               <div key={message.id} style={{ textAlign: message.senderID._id === getOtherUser()?._id ? 'left' : 'right', marginBottom: '10px' }}>
                 <Typography variant="body1" style={{ display: 'inline-block', backgroundColor: message.senderID._id === getOtherUser()?._id ? '#e6e6e6' : '#2979ff', padding: '8px', borderRadius: '8px', color: message.senderId === selectedContactId ? '#333' : '#fff' }}>{message.content}</Typography>
-                <Typography variant="caption" style={{ display: 'block', textAlign: message.senderID._id === getOtherUser()?._id ? 'left' : 'right', marginTop: '5px', color: '#666' }}>{message.timestamp}</Typography>
+                <Typography variant="caption" style={{ display: 'block', textAlign: message.senderID._id === getOtherUser()?._id ? 'left' : 'right', marginTop: '5px', color: '#666' }}>{message.createdAt}</Typography>
               </div>
             ))}
           </div>
           <Divider style={{ margin: '20px 0' }} />
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={10}>
-              <TextField fullWidth placeholder="Type your message..." variant="outlined" />
+              <TextField fullWidth id="messagebox" placeholder="Type your message..." variant="outlined" onChange={(e) => setText(e.target.value)} />
             </Grid>
             <Grid item xs={2}>
-              <Button variant="contained" color="primary" fullWidth>Send</Button>
+              <Button variant="contained" color="primary" fullWidth onClick={handleSubmit}>Send</Button>
             </Grid>
           </Grid>
         </Grid>
