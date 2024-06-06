@@ -42,7 +42,7 @@ function App() {
     <Router>
       <Routes>
         <Route element={<Layout loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>}> 
-        <Route path="/" element = {<Catalog/>}/>
+        <Route path="/" element = {<Login/>}/>
           <Route path="/Home" element={<Home/>}/>
           <Route path="/Login" element={<Login setLoggedIn={setLoggedIn}/>}/>
           <Route path="/BookInformation/:bookId" element = {<BookInformation setLoggedIn={setLoggedIn}/>}/>
