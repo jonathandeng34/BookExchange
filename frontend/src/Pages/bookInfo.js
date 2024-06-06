@@ -157,7 +157,7 @@ export function BookInformation(props) {
       }
       return json;
     }).then(json => {
-      navigate("/");
+      navigate("/Catalog"); // changes this from root to Catalog
     }).catch(e => {
       console.log(e);
       setSnackbarText(e["reason"] || "Internal Error");
