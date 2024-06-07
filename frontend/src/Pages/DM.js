@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Container, Grid, List, ListItem, ListItemAvatar, Avatar, Typography, Divider, TextField, Button } from '@mui/material';
 import Endpoints from '../Endpoints';
 import { Snackbar } from '@mui/material';
@@ -27,12 +27,30 @@ export function DirectMessaging({ setLoggedIn }) {
   const [open, setOpen] = useState(false);
   const [selectedContactId, setSelectedContactId] = useState(null);
   const [socket, setSocket] = useState(null);
+  const [myId, setMyId] = useState(null);
+  const [loaded, setLoaded] = useState(false);
 
 
   const navigate = useNavigate();
   const query = useQuery();
 
 
+  const messagesEndRef = useRef();
+  const chatBox = useRef();
+
+  const scrollToBottom = () => {
+    var isScrolledToBottom = chatBox.current?.scrollHeight - chatBox.current?.clientHeight <= chatBox.current?.scrollTop + 1000
+    if (isScrolledToBottom || !loaded) {
+      messagesEndRef.current?.scrollIntoView({block: 'nearest', inline: 'start'})
+    }
+    setLoaded(true);
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages]);
+
+  
   const getExchangesForUser = (useDefaultId = false) => {
     Endpoints.doGetExchangesByUser().then(response => {
       if(!response.ok) {
@@ -80,24 +98,33 @@ export function DirectMessaging({ setLoggedIn }) {
       }
       return json;
     }).then(json => {
-        return json["_id"];
+        setMyId(json["_id"]);
     }).catch(e => {
         //Do Nothing
-    }).then((myId) => {
-    const socket = io(process.env.REACT_APP_BACKEND_URL, {
-      query: {
-        userId: myId
-      }
-    });
-    setSocket(socket);
-
-    return () => socket.close()
-  });
+    })
   }, [])
+
+
+  useEffect(() => {
+    if (myId) {
+      const socket = io(process.env.REACT_APP_BACKEND_URL, {
+        query: {
+          userId: myId
+        }
+      });
+      setSocket(socket);
+      return () => socket.close()
+    } else {
+      if (socket) {
+        socket.close();
+        setSocket(null);
+      }
+    }
+  }, [myId]);
 
   useEffect(() => {
     getMessagesForUser();
-  }, [selectedContactId]);
+  }, [selectedContactId, loaded]);
 
   useEffect(() => {
     socket?.on("message", (newMessage) => {
@@ -141,6 +168,7 @@ export function DirectMessaging({ setLoggedIn }) {
 
   const handleContactClick = (contactId) => {
     setSelectedContactId(contactId);
+    setLoaded(false);
   };
   
   function getExchangeButtons() {
@@ -343,13 +371,14 @@ export function DirectMessaging({ setLoggedIn }) {
         <Grid item xs={8}>
           <Typography variant="h5">Conversation with {getOtherUser()?.username}</Typography>
           <Divider />
-          <div style={{ height: '400px', overflowY: 'scroll', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}>
+          <div ref={chatBox} style={{ height: '400px', overflowY: 'scroll', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}>
             {messages.map(message => (
               <div key={message._id} style={{ textAlign: message.senderID._id === getOtherUser()?._id ? 'left' : 'right', marginBottom: '10px' }}>
                 <Typography variant="body1" style={{ display: 'inline-block', backgroundColor: message.senderID._id === getOtherUser()?._id ? '#e6e6e6' : '#2979ff', padding: '8px', borderRadius: '8px', color: message.senderId === selectedContactId ? '#333' : '#fff' }}>{message.content}</Typography>
                 <Typography variant="caption" style={{ display: 'block', textAlign: message.senderID._id === getOtherUser()?._id ? 'left' : 'right', marginTop: '5px', color: '#666' }}>{message.createdAt}</Typography>
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
           <Divider style={{ margin: '20px 0' }} />
           <Grid container spacing={2} alignItems="center" component="form" onSubmit={handleSubmit} noValidate>
