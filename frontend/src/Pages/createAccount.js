@@ -15,6 +15,13 @@ import {
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Endpoints from '../Endpoints';
+import logo from '../Assets/bruinBookExchangeLogo.png';
+
+const largeLogoStyle = {
+    height: '200px', 
+    margin: '20px auto 0', 
+    display: 'block'
+};
 
 const theme = createTheme();
 
@@ -76,9 +83,8 @@ export function CreateAccount() {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon />
-                    </Avatar>
+                    <img src={logo} alt="Logo" style={largeLogoStyle} />
+
                     <Typography component="h1" variant="h5">
                         Create Account
                     </Typography>
