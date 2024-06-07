@@ -162,7 +162,7 @@ export function DirectMessaging({ setLoggedIn }) {
     if(curExchange.role == 1) {
       if(!curExchange.acceptedTwo) {
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '300px'}}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
             <BoldText text={"Waiting for Other Participant to Accept Exchange"} />
           </div>
         );
@@ -176,14 +176,14 @@ export function DirectMessaging({ setLoggedIn }) {
     else if(curExchange.role == 2) {
       if(!curExchange.acceptedTwo) {
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '300px'}}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
           <BlueButton text="Select Book to Exchange With" onClick = {acceptTwo}/>
           </div>
         );
       }
       else if(!curExchange.acceptedOne) {
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '300px'}}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
           <BoldText text={"Waiting for Other Participant to Accept Selected Book"}/>
           </div>
         );
@@ -239,18 +239,14 @@ export function DirectMessaging({ setLoggedIn }) {
     let myBook = (curExchange.role == 1) ? curExchange.bookTwo : curExchange.bookOne;
   
     return (
-      <div style={{ flex: 1, marginLeft: '430px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', position: 'flex', top: 0, right: 500}}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', justifyContent: "space-between"}}>
-          <BoldText text={"The book that I am exchanging to " + getOtherUser().username + ": " + (myBook ? myBook.title : "Unselected")} style={{ marginRight: "40px" }}/>
+          <div style={{ textAlign: "center", verticalAlign: "middle", marginLeft: "400px"}}>
+          <BoldText text={"The book that I am exchanging to " + getOtherUser().username + ": " + (myBook ? myBook.title : "Unselected")} style={{ marginRight: "400px" }}/>
           {myBook ? 
-          <BlueButton text={"View"} onClick={() => { navigate("/BookInformation/" + myBook._id) }} style={{ position: 'flex', top: 150, right: 300}}/> : null}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+          <BlueButton text={"View"} onClick={() => { navigate("/BookInformation/" + myBook._id) }} style={{ position: 'flex', top: 100, right: 300}}/> : null}
           <BoldText text={"The book I'm receiving from " + getOtherUser().username + ": " + (otherBook ? otherBook.title : "Unselected")} />
           {otherBook ? <BlueButton text={"View"} onClick={() => { navigate("/BookInformation/" + otherBook._id) }} /> : null}
-        </div>
-        <BlueButton text={"Cancel Exchange"} onClick={cancelExchange} />
-      </div>
+          <BlueButton text={"Cancel Exchange"} onClick={cancelExchange} />
+          </div>
     );
   }
   
