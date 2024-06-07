@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    Avatar,
     Button,
     Container,
     CssBaseline,
@@ -12,7 +11,6 @@ import {
     Snackbar,
     CircularProgress,
 } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Endpoints from '../Endpoints';
 import logo from '../Assets/bruinBookExchangeLogo.png';

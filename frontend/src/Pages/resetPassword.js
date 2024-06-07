@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-    Avatar,
     Button,
     Container,
     CssBaseline,
@@ -10,7 +9,6 @@ import {
     Snackbar,
     CircularProgress,
 } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Endpoints from '../Endpoints';
 import logo from '../Assets/bruinBookExchangeLogo.png';
@@ -74,7 +72,7 @@ export function ResetPassword() {
     const handleResetSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
-        if(resetFormData.newPassword.trim().length == 0) {
+        if(resetFormData.newPassword.trim().length === 0) {
             setSnackbarText("Please Set a New Password");
             setOpen(true);
             return;
