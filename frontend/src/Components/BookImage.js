@@ -27,7 +27,7 @@ export function BookImage(props) {
                         boxSizing: "border-box"
                     }}
                     src={(props.book && props.book._id) ? "http://localhost:4000/book/downloadImage/"+props.book._id : null}
-                    alt="Image"
+                    alt="this is a pic"
                     onLoad={imageLoaded}
                     />
                 </>

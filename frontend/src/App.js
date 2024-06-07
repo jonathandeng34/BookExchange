@@ -24,7 +24,7 @@ import { BooksByUser } from './Pages/userBooks.js';
 function App() {
 
 
-  const [text, setText] = useState('')
+  //const [text, setText] = useState('')
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {

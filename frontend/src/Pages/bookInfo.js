@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Endpoints from '../Endpoints';
-import { snackbarError } from '../utils.js';
 import { useQuery } from '../utils.js';
 
 import {
@@ -214,13 +213,13 @@ export function BookInformation(props) {
       <Typography variant="h5" gutterBottom style={styles.sectionTitle}>
        Original Book Owner:
       </Typography>
-      <Typography>{(book.bookOwner && book.bookOwner.username != undefined) ? book.bookOwner.username : "Loading..."}</Typography>
+      <Typography>{(book.bookOwner && book.bookOwner.username !== undefined) ? book.bookOwner.username : "Loading..."}</Typography>
 
 
       <Typography variant="h5" gutterBottom style={styles.sectionTitle}>
         User Rating
       </Typography>
-      <Typography style={styles.status}>{(book.bookOwner && book.bookOwner.userRating != undefined) ? book.bookOwner.userRating : "Loading..."}</Typography>
+      <Typography style={styles.status}>{(book.bookOwner && book.bookOwner.userRating !== undefined) ? book.bookOwner.userRating : "Loading..."}</Typography>
 
       <Typography variant="h5" gutterBottom style={styles.sectionTitle}>
         Comments

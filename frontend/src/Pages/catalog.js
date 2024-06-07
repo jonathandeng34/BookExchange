@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, InputAdornment, IconButton, Grid, Typography, MenuItem } from '@mui/material';
+import { TextField, InputAdornment, IconButton, MenuItem } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { Snackbar } from '@mui/material';
 import '../index.css'; // Assuming the CSS file is named styles.css
 import Endpoints from '../Endpoints';
-import { useNavigate } from 'react-router-dom';
-import { BookImage } from '../Components/BookImage.js';
 import { BookContainer } from '../Components/BookContainer.js';
 
 export function Catalog() {
     // State for search query and selected genre
-    const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedGenre, setSelectedGenre] = useState('');
     const [books, setBooks] = useState([]);

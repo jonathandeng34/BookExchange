@@ -128,7 +128,7 @@ export function DirectMessaging({ setLoggedIn }) {
 
   useEffect(() => {
     socket?.on("message", (newMessage) => {
-      if (newMessage.exchangeID.toString() == selectedContactId) {
+      if (newMessage.exchangeID.toString() === selectedContactId) {
         getMessagesForUser();
       }
     })
@@ -181,13 +181,13 @@ export function DirectMessaging({ setLoggedIn }) {
       setSelectedContactId(null);
       return;
     }
-    if(curExchange.role != 1 && curExchange.role != 2) {
+    if(curExchange.role !== 1 && curExchange.role !== 2) {
       setSnackbarText("Malformed Exchange Data");
       setOpen(true);
       return;
     }
 
-    if(curExchange.role == 1) {
+    if(curExchange.role === 1) {
       if(!curExchange.acceptedTwo) {
         return (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
@@ -203,7 +203,7 @@ export function DirectMessaging({ setLoggedIn }) {
         );
       }
     }
-    else if(curExchange.role == 2) {
+    else if(curExchange.role === 2) {
       if(!curExchange.acceptedTwo) {
         return (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
@@ -220,40 +220,40 @@ export function DirectMessaging({ setLoggedIn }) {
       }
     }
     
-    if((curExchange.exchangeStatus & curExchange.role) == 0) {
+    if((curExchange.exchangeStatus & curExchange.role) === 0) {
       return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
         <BlueButton text={"Confirm Exchange Performed"} onClick={confirmExchange}/>
         </div>
       );
     }
-    else if(curExchange.exchangeStatus != 3) {
+    else if(curExchange.exchangeStatus !== 3) {
       return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
         <BoldText text={"Waiting for Other Participant to Confirm Exchange Performed"}/>
         </div>
       );
     }
-    else if((curExchange.readStatus & curExchange.role) == 0) {
-      return (<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
+    else if((curExchange.readStatus & curExchange.role) === 0) {
+      return (<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '405px'}}>
       <BlueButton text={"Finished Reading Book"} onClick={confirmRead}/>
       </div>)
     }
-    else if(curExchange.readStatus != 3) {
+    else if(curExchange.readStatus !== 3) {
       return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
         <BoldText text={"Waiting for Other Participant to Finish Reading Book"}/>
         </div>
       );
     }
-    else if((curExchange.reexchangeStatus & curExchange.role) == 0) {
+    else if((curExchange.reexchangeStatus & curExchange.role) === 0) {
       return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '405px'}}>
       <BlueButton text={"Confirm Book Retrieval"} onClick={confirmReexchange}/>
       </div>
       );
     }
-    else if(curExchange.reexchangeStatus != 3) {
+    else if(curExchange.reexchangeStatus !== 3) {
       return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
         <BoldText text={"Waiting for Other Participant to Confirm Book Retrieval"}/>
@@ -279,8 +279,8 @@ export function DirectMessaging({ setLoggedIn }) {
       return null;
     }
   
-    let otherBook = (curExchange.role == 1) ? curExchange.bookOne : curExchange.bookTwo;
-    let myBook = (curExchange.role == 1) ? curExchange.bookTwo : curExchange.bookOne;
+    let otherBook = (curExchange.role === 1) ? curExchange.bookOne : curExchange.bookTwo;
+    let myBook = (curExchange.role === 1) ? curExchange.bookTwo : curExchange.bookOne;
   
     return (
           <div style={{ textAlign: "center", verticalAlign: "middle", marginLeft: "400px"}}>
