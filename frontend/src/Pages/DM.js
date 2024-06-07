@@ -197,7 +197,9 @@ export function DirectMessaging({ setLoggedIn }) {
       }
       else if(!curExchange.acceptedOne) {
         return (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '410px'}}>
           <BlueButton text={"Accept Selected Book"} onClick={acceptOne}/>
+          </div>
         );
       }
     }
@@ -220,28 +222,42 @@ export function DirectMessaging({ setLoggedIn }) {
     
     if((curExchange.exchangeStatus & curExchange.role) == 0) {
       return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
         <BlueButton text={"Confirm Exchange Performed"} onClick={confirmExchange}/>
+        </div>
       );
     }
     else if(curExchange.exchangeStatus != 3) {
       return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
         <BoldText text={"Waiting for Other Participant to Confirm Exchange Performed"}/>
+        </div>
       );
     }
     else if((curExchange.readStatus & curExchange.role) == 0) {
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
       return (<BlueButton text={"Finished Reading Book"} onClick={confirmRead}/>);
+      </div>
     }
     else if(curExchange.readStatus != 3) {
       return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
         <BoldText text={"Waiting for Other Participant to Finish Reading Book"}/>
+        </div>
       );
     }
     else if((curExchange.reexchangeStatus & curExchange.role) == 0) {
-      return (<BlueButton text={"Confirm Book Retrieval"} onClick={confirmReexchange}/>);
+      return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
+      <BlueButton text={"Confirm Book Retrieval"} onClick={confirmReexchange}/>
+      </div>
+      );
     }
     else if(curExchange.reexchangeStatus != 3) {
       return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
         <BoldText text={"Waiting for Other Participant to Confirm Book Retrieval"}/>
+        </div>
       );
     }
     else {
@@ -369,8 +385,8 @@ export function DirectMessaging({ setLoggedIn }) {
           <Divider />
           <div ref={chatBox} style={{ height: '400px', overflowY: 'scroll', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}>
             {messages.map(message => (
-              <div key={message._id} style={{ textAlign: message.senderID._id === getOtherUser()?._id ? 'left' : 'right', marginBottom: '10px' }}>
-                <Typography variant="body1" style={{ display: 'inline-block', backgroundColor: message.senderID._id === getOtherUser()?._id ? '#e6e6e6' : '#2979ff', padding: '8px', borderRadius: '8px', color: message.senderId === selectedContactId ? '#333' : '#fff' }}>{message.content}</Typography>
+              <div key={message._id} style={{ textAlign: message.senderID._id === getOtherUser()?._id ? 'left' : 'right', marginBottom: '10px', maxWidth: '50%', wordWrap: 'break-word', marginLeft: message.senderID._id === getOtherUser()?._id ? '10px' : 'auto', marginRight: message.senderID._id !== getOtherUser()?._id ? '10px' : 'auto' }}>
+                <Typography variant="body1" style={{ display: 'inline-block', backgroundColor: message.senderID._id === getOtherUser()?._id ? '#e6e6e6' : '#2979ff', padding: '8px', borderRadius: '8px', color: message.senderID._id === getOtherUser()?._id ? '#000' : '#fff' }}>{message.content}</Typography>
                 <Typography variant="caption" style={{ display: 'block', textAlign: message.senderID._id === getOtherUser()?._id ? 'left' : 'right', marginTop: '5px', color: '#666' }}>{message.createdAt}</Typography>
               </div>
             ))}

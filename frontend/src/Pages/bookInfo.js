@@ -212,6 +212,12 @@ export function BookInformation(props) {
       <Typography style={styles.status}>Status: {book.isBookOutForExchange ? "Out for Exchange" : "Available"}</Typography>
 
       <Typography variant="h5" gutterBottom style={styles.sectionTitle}>
+       Original Book Owner:
+      </Typography>
+      <Typography>{(book.bookOwner && book.bookOwner.username != undefined) ? book.bookOwner.username : "Loading..."}</Typography>
+
+
+      <Typography variant="h5" gutterBottom style={styles.sectionTitle}>
         User Rating
       </Typography>
       <Typography style={styles.status}>{(book.bookOwner && book.bookOwner.userRating != undefined) ? book.bookOwner.userRating : "Loading..."}</Typography>
