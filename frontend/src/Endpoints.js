@@ -245,7 +245,7 @@ class EndPoints
         }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
     }
 
-    doSendMessage = (exchangeId, content) => {
+    doSendMessage = (exchangeId, content, setLoggedIn) => {
         const Body = {
             content: content
         };
@@ -256,14 +256,14 @@ class EndPoints
             "method" : "POST",
             "body": JSON.stringify(Body),
             "credentials": "include"
-        });      
+        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));      
     }
 
-    doGetMessages = (exchangeId)  => {
+    doGetMessages = (exchangeId, setLoggedIn)  => {
         return fetch(BackendURL + "/message/" + exchangeId, {
             "method": "GET",
             "credentials": "include"
-        });
+        }).then((response) => isLoggedInMiddleware(response, setLoggedIn));
     }
     
 }

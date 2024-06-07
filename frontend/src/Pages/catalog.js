@@ -46,7 +46,7 @@ export function Catalog() {
     ];
 
     return (
-        <div className="catalog-page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div className="catalog-page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '10px' }}>
             {/* Search Bar */}
             <TextField
                 label="Search by Title or Author"

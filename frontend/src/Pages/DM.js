@@ -76,7 +76,7 @@ export function DirectMessaging({ setLoggedIn }) {
       return;
     }
 
-    Endpoints.doGetMessages(selectedContactId).then(response => {
+    Endpoints.doGetMessages(selectedContactId, setLoggedIn).then(response => {
       if(!response.ok) {
           throw "Response Failure"
       }
@@ -150,7 +150,7 @@ export function DirectMessaging({ setLoggedIn }) {
       setOpen(true);
       return;
     }
-    Endpoints.doSendMessage(selectedContactId, text).then(async (response) => {
+    Endpoints.doSendMessage(selectedContactId, text, setLoggedIn).then(async (response) => {
         if(!response.ok) {
           const json = await response.json();
           throw json;
