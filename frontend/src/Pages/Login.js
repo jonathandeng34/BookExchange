@@ -11,14 +11,30 @@ import {
     Snackbar,
     CircularProgress,
 } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Endpoints from '../Endpoints.js';
+import { Link, useNavigate } from 'react-router-dom'; 
+import logo from '../Assets/bruinBookExchangeLogo.png';
+
 
 const theme = createTheme();
 
-export function Login() {
+
+const largeLogoStyle = {
+    height: '200px', 
+    margin: '20px auto 0', 
+    display: 'block'
+};
+
+
+
+//Login component
+export function Login(props) {
+
+    const navigate = useNavigate(); 
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
+    const [snackbarText, setSnackbarText] = useState("");
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -36,11 +52,47 @@ export function Login() {
         e.preventDefault();
         setLoading(true);
 
-        // Mock API call
-        setTimeout(() => {
-            setLoading(false);
-            setOpen(true);
-        }, 2000);
+
+
+        Endpoints.doLogin(formData.email, formData.password).then(async (response) => {
+            console.log(response)
+            if (!response.ok)
+            {
+                let errorText = await response.text();
+                try {
+                    let errorJson = JSON.parse(errorText);
+                    if(!errorJson["reason"]) {
+                        throw "Not a human readable error";
+                    }
+                    setSnackbarText(errorJson["reason"]);
+                    setOpen(true);
+                    setLoading(false);
+                    return;
+                }
+                catch(e) {
+                    throw errorText;
+                }
+                
+            }
+
+            //Make sure the dummy cookie exists
+            if(!document.cookie.includes("jwt")) {
+                setSnackbarText("Please Make Sure you have Cookies Enabled");
+                setOpen(true);
+                setLoading(false);
+                return;
+            }
+
+            props.setLoggedIn(true);
+            navigate('/Home');
+        }).catch(
+            err => {
+                setSnackbarText("Internal Error");
+                setOpen(true);
+                console.log(err);
+                setLoading(false);
+            }
+        )
     };
 
     return (
@@ -55,9 +107,8 @@ export function Login() {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon />
-                    </Avatar>
+
+                        <img src={logo} alt="Logo" style={largeLogoStyle} />
                     <Typography component="h1" variant="h5">
                         Log In
                     </Typography>
@@ -99,12 +150,18 @@ export function Login() {
                             {loading ? <CircularProgress size={24} /> : 'Log In'}
                         </Button>
                     </Box>
+                    <Link to="/ResetPassword">
+                        <Button variant="contained"> 
+                            Reset Password Page 
+                        </Button>
+                    </Link>
+                    
                 </Box>
                 <Snackbar
                     open={open}
                     autoHideDuration={6000}
                     onClose={() => setOpen(false)}
-                    message="Logged in successfully!"
+                    message={snackbarText}
                 />
             </Container>
         </ThemeProvider>

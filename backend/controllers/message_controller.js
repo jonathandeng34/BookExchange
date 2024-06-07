@@ -4,10 +4,14 @@ import User from '../db_models/user_model.js'
 import validateJWT from '../security/validate_jwt.js'
 import Message from '../db_models/message_model.js'
 import { io, userSocketId } from '../socket.js'
+import { validateID } from '../frontend_models/validate_schema.js'
+import BookExchange from '../db_models/book_exchange_model.js'
+import { MessageSchema } from '../frontend_models/book_exchange_schemas.js'
+import validateSchema from '../frontend_models/validate_schema.js'
 
 const router = express.Router();
 
-router.get('/:id', validateJWT(), async (req, res) => {
+router.get('/:id', validateID(), validateJWT(), async (req, res) => {
     try {
             let sendUser = await User.findById(req.userId);
             if (!sendUser) {
@@ -17,20 +21,28 @@ router.get('/:id', validateJWT(), async (req, res) => {
                 });
                 return;
             }
-            let recvUser = await User.findById(req.params.id);
-            if (!recvUser) {
+
+            let exchange = await BookExchange.findById(req.params.id);
+
+            if(!exchange) {
                 res.status(404);
                 res.json({
-                    "reason": "Recipient Doesn't Exist"
+                    "reason": "Book Exchange Doesn't Exist"
                 });
                 return;
             }
+
+            if (req.userId != exchange.participantOne.toString() && req.userId != exchange.participantTwo.toString()) {
+                res.status(401);
+                res.json({
+                    "reason": "Unauthorized"
+                });
+                return;
+            }
+
             const messageHistory = await Message.find({
-                $and: [
-                    { senderID: new mongoose.Types.ObjectId(req.userId) },
-                    { recipientID: new mongoose.Types.ObjectId(req.params.id) }
-                ]
-            });
+                exchangeID: req.params.id
+            }).populate('senderID', '_id username');
 
 
             res.status(200);
@@ -43,16 +55,8 @@ router.get('/:id', validateJWT(), async (req, res) => {
     return;
 });
 
-router.post('/send/:id', validateJWT(), async (req, res) => {
+router.post('/send/:id', validateID(), validateSchema(MessageSchema), validateJWT(), async (req, res) => {
     try {
-            if (req.params.id == req.userId)
-            {
-                res.status(400);
-                res.json({
-                    "reason": "Message With Self"
-                });
-                return;
-            }
             let sendUser = await User.findById(req.userId);
             if (!sendUser) {
                 res.status(404);
@@ -61,28 +65,44 @@ router.post('/send/:id', validateJWT(), async (req, res) => {
                 });
                 return;
             }
-            let recvUser = await User.findById(req.params.id);
-            if (!recvUser) {
+
+            let exchange = await BookExchange.findById(req.params.id);
+            if(!exchange) {
                 res.status(404);
                 res.json({
-                    "reason": "Recipient Doesn't Exist"
+                    "reason": "Exchange Doesn't Exist"
                 });
                 return;
             }
+            let receiver = "";
+
+            if (exchange.participantOne.toString() == req.userId) {
+                receiver = exchange.participantTwo.toString();
+            } else if (exchange.participantTwo.toString() == req.userId) {
+                receiver = exchange.participantOne.toString();
+            } else {
+                res.status(401);
+                res.json({
+                    "reason": "Unauthorized"
+                });
+                return;
+            }
+
             let newMessage = new Message({
                 senderID: req.userId,
-                recipientID: req.params.id,
+                exchangeID: req.params.id,
                 content: req.body.content,
             });
-
-            const recvSocket = userSocketId(req.params.id);
+            
+            const recvSocket = userSocketId(receiver);
             if (recvSocket) {
-                io.to(recvSocket).emit("message", newMessage);
+                io.to(recvSocket).emit("message", await newMessage.populate('senderID', '_id username'));
             }
 
             newMessage.save().then(doc => {
                 res.json(doc);
             });
+
     } catch (e) {
         console.log(e);
         res.status(500).send("Internal Server Error");      

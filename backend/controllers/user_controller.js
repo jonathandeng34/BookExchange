@@ -32,13 +32,32 @@ router.get('/get/:id', validateID(), (req, res) => {
         _id: req.params.id
     }).select('_id username userRating').then((user) => {
         if (!user) {
-            res.status(404).send("User Not Found!");
+            res.status(404).json({
+                "reason": "User Not Found!"
+            });
             return;
         }
         res.json(user);
     }).catch((e) => {
         console.log(e);
-        res.status(500).send("Internal Server Error");
+        res.sendStatus(500);
+    });
+});
+
+router.get('/getself', validateJWT(), (req, res) => {
+    User.findOne({
+        _id: req.userId
+    }).then((user) => {
+        if (!user) {
+            res.status(404).json({
+                "reason": "User Not Found!"
+            });
+            return;
+        }
+        res.json(user);
+    }).catch((e) => {
+        console.log(e);
+        res.sendStatus(500);
     });
 });
 
@@ -48,7 +67,9 @@ router.get('/recommendation', validateJWT(), (req, res) => {
     .then(async (user) => {
         if(!user) {
             res.status(404);
-            res.send("Unable to find User in Database");
+            res.json({
+                "reason": "Unable to find User in Database"
+            });
             return;
         }
 
@@ -82,7 +103,7 @@ router.get('/recommendation', validateJWT(), (req, res) => {
         const exchangedIds = user.exchangedBooks.map(book => book["_id"].toString());
 
         let recommendedBooks = validBooks.filter(book => {
-            return !exchangedIds.includes(book._id.toString());
+            return (!(exchangedIds.includes(book._id.toString())) && (book.bookOwner.toString() !== user._id.toString()));
         });
         shuffle(recommendedBooks);
         recommendedBooks = recommendedBooks.slice(0,3);

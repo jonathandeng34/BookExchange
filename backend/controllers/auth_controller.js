@@ -7,11 +7,17 @@ import jwt from 'jsonwebtoken'
 
 
 import validateSchema, { validateID } from '../frontend_models/validate_schema.js';
+import validateJWT from '../security/validate_jwt.js';
 import { LoginSchema, RegisterSchema, ForgotPasswordSchema, ChangePasswordSchema } from '../frontend_models/auth_schemas.js';
 
 import ForgotPasswordModel from '../db_models/forgotpass_model.js';
 
 const router = express.Router();
+
+
+router.get('/check-identity', validateJWT(), (req, res) => {
+    res.sendStatus(200);
+})
 
 /**
  * Expected JSON:
@@ -24,8 +30,17 @@ router.post('/register', validateSchema(RegisterSchema), async (req, res) => {
 
     let domainName = req.body.email.split('@')[1];
     if(domainName != "g.ucla.edu" && domainName != "ucla.edu") {
-        res.status(500);
-        res.send("Invalid Email. Please use a valid UCLA address");
+        res.status(400);
+        res.json({
+            "reason": "Invalid Email. Please use a valid UCLA address"
+        });
+        return;
+    }
+    if(req.body.password.length < 5) {
+        res.status(400);
+        res.json({
+            "reason": "Please ensure your password is at least 5 characters long"
+        });
         return;
     }
 
@@ -39,7 +54,9 @@ router.post('/register', validateSchema(RegisterSchema), async (req, res) => {
     
         if(users.length != 0) {
             res.status(500);
-            res.send("Account already exists with the given email");
+            res.json({
+                "reason": "Account already exists with the given email"
+            });
             return;
         }
     
@@ -49,14 +66,18 @@ router.post('/register', validateSchema(RegisterSchema), async (req, res) => {
     
         if(users.length != 0) {
             res.status(500);
-            res.send("Account already exists with the given username");
+            res.json({
+                "reason": "Account already exists with the given username"
+            });
             return;
         }
     }
     catch(e) {
         console.log(e);
         res.status(500);
-        res.send("Internal Server Error");
+        res.json({
+            "reason": "Internal Server Error"
+        });
         return;
     }
 
@@ -72,13 +93,17 @@ router.post('/register', validateSchema(RegisterSchema), async (req, res) => {
     sendMail(req.body.email, "Account Being Created", "Your account will be created momentarily")
     .then((info) => {
         newUser.save().then(doc => {
-            res.send("Account Created Successfully");
+            res.json({
+                "reason": "Account Created Successfully"
+            });
         });
     })
     .catch(e => {
         console.log(e);
         res.status(400);
-        res.send("Unable to Send Email Verification");
+        res.json({
+            "reason": "Unable to Send Email Verification"
+        });
     });
 
     //Email with verify
@@ -101,7 +126,9 @@ router.post('/login', validateSchema(LoginSchema), (req, res) => {
     }).then((user) => {
         if(!user) {
             res.status(404);
-            res.send("No User exists with the Given Email!");
+            res.json({
+                "reason": "No User exists with the Given Email!"
+            });
             return;
         }
 
@@ -115,19 +142,34 @@ router.post('/login', validateSchema(LoginSchema), (req, res) => {
                 res.cookie("jwt", jwtToken, {
                     maxAge: 3 * 24 * 60 * 60 * 1000,
                     httpOnly: true,
-                    sameSite: "lax",
+                    sameSite: "strict",
+                    secure: true
+                });
+                res.cookie("jwtDummy", "Dummy Data", {
+                    maxAge: 3 * 24 * 60 * 60 * 1000,
+                    httpOnly: false,
+                    sameSite: "strict",
                     secure: true
                 });
                 res.status(201);
-                res.send("Login Success");
+                res.json({
+                    "reason": "Login Success"
+                });
             }
             else {
-                res.status(401);
-                res.send("Incorrect Password!");
+                res.status(400);
+                res.json({
+                    "reason": "Incorrect Password!"
+                });
             }
         })
         
     });
+});
+
+router.post('/logout', (req, res) => {
+    res.clearCookie('jwt');
+    res.sendStatus(200);
 });
 
 /**
@@ -140,7 +182,9 @@ router.post('/forgotpassword/request', validateSchema(ForgotPasswordSchema), (re
     }).then(user => {
         if(!user) {
             res.status(404);
-            res.send("No User Exists with Given Email");
+            res.json({
+                "reason": "No User Exists with Given Email"
+            });
             return;
         }
         let expirationDate = new Date();
@@ -159,7 +203,9 @@ router.post('/forgotpassword/request', validateSchema(ForgotPasswordSchema), (re
     .catch(e => {
         console.log(e);
         res.status(500);
-        res.send("Internal Server Error");
+        res.json({
+            "reason": "Internal Server Error"
+        });
     });
 });
 
@@ -168,14 +214,15 @@ router.get('/forgotpassword/check_code/:id', validateID(), (req, res) => {
     ForgotPasswordModel.findById(req.params.id).then(forgotReq => {
         if(!forgotReq) {
             res.status(404);
-            res.send("Invalid Forgot Password Code");
+            res.json({
+                "reason": "Invalid Forgot Password Code"
+            });
             return;
         }
         res.sendStatus(200);
     }).catch((e) => {
         console.log(e);
-        res.status(500);
-        res.send("Internal Server Error");
+        res.sendStatus(500);
     });
 });
 
@@ -187,7 +234,9 @@ router.post('/forgotpassword/change_password/:id', validateSchema(ChangePassword
     ForgotPasswordModel.findById(req.params.id).then(forgotReq => {
         if(!forgotReq) {
             res.status(404);
-            res.send("Invalid Forgot Password Code");
+            res.json({
+                "reason": "Invalid Forgot Password Code"
+            });
             return;
         }
 
@@ -197,7 +246,9 @@ router.post('/forgotpassword/change_password/:id', validateSchema(ChangePassword
         ).then(async (user) => {
             if(!user) {
                 res.status(404);
-                res.send("Problem Finding User to Update Password For");
+                res.json({
+                    "reason": "Problem Finding User to Update Password For"
+                });
             }
             await ForgotPasswordModel.deleteOne({_id: forgotReq._id});
             res.sendStatus(200);
@@ -208,8 +259,7 @@ router.post('/forgotpassword/change_password/:id', validateSchema(ChangePassword
 
     }).catch((e) => {
         console.log(e);
-        res.status(500);
-        res.send("Internal Server Error");
+        res.sendStatus(500);
     });
 });
 

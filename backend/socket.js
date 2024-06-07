@@ -1,5 +1,6 @@
 import express from 'express'
 import http from 'http'
+import { connect } from 'http2';
 import { Server } from 'socket.io'
 
 
@@ -13,11 +14,16 @@ const io = new Server(server, {
     }
 });
 
-export const userSocketId = (user) => {
-    return connections[user];
+export const userSocketId = (exchange) => {
+    if(!connections[exchange]) {
+        return undefined;
+    }
+    return connections[exchange];
 }
 
 const connections = {};
+
+//One connection per book exchange per user
 
 io.on('connection', (socket) => {
     console.log(socket.id, 'connected');

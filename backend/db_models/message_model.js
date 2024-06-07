@@ -6,10 +6,10 @@ const MessageSchema = new mongoose.Schema({
         required: true,
         ref: 'User'
     },
-    recipientID: {
+    exchangeID: {
         type: mongoose.Types.ObjectId,
         required: true,
-        ref: 'User'
+        ref: 'BookExchange'
     },
     content: {
         type: String,

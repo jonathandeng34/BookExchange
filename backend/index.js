@@ -19,10 +19,12 @@ import { app, server } from './socket.js'
 
 const port = process.env.PORT || 5000;
 app.use(cookieParser())
-app.use(cors({
-    credentials: true,
-    origin: process.env.FRONTEND_ORIGIN
-}))
+// app.use(cors({
+//     credentials: true,
+//     origin: process.env.FRONTEND_ORIGIN
+// }))
+
+app.use(express.static('../frontend/build'));
 
 connectDB()
 
@@ -113,8 +115,7 @@ async function generateDummyData() {
             _id: new mongoose.Types.ObjectId('6643d77345389a92052ed220'),
             username: "Chocolate Enjoyer",
             password: "This should be encrypted btw",
-            email: "hydroflask@g.ucla.edu",
-            userRating: 5
+            email: "hydroflask@g.ucla.edu"
         });
         const doc = await dummyUser.save();
         const dummyBook = new Book({

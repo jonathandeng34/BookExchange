@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 
 //Properties:
 // Participant 1 (Object ID)
@@ -58,7 +58,7 @@ const BookExchangeSchema = new mongoose.Schema({
         min: 0,
         max: 3
     }
-});
+}, {timestamps: true});
 
 const BookExchange = mongoose.model('BookExchange', BookExchangeSchema);
 

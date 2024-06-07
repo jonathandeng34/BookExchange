@@ -11,6 +11,13 @@ const styles = {
     color: '#476B70', // Default text color
     fontFamily: 'Inter, Helvetica, Arial, sans-serif', // Add font-family for consistency
   },
+  navigationBarContainer: {
+    display: 'flex',
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    height: '64px', 
+    backgroundColor: '#FBFFFF',
+  },
   main: {
     paddingTop: '20px',
     paddingBottom: '20px',
@@ -19,10 +26,12 @@ const styles = {
   },
 };
 
-export function Layout() {
+export function Layout(props) {
   return (
     <div style={styles.app}>
-      <Navbar />
+        <div style={styles.navigationBarContainer}>
+          <Navbar loggedIn={props.loggedIn} setLoggedIn={props.setLoggedIn} />
+        </div>
       <Container component="main" style={styles.main}>
         <Outlet />
       </Container>

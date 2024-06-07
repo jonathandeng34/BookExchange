@@ -1,20 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, InputAdornment, IconButton, Grid, Typography, MenuItem } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import BookIcon from '@mui/icons-material/Book';
+import { Snackbar } from '@mui/material';
 import '../index.css'; // Assuming the CSS file is named styles.css
+import Endpoints from '../Endpoints';
+import { useNavigate } from 'react-router-dom';
+import { BookImage } from '../Components/BookImage.js';
+import { BookContainer } from '../Components/BookContainer.js';
 
 export function Catalog() {
     // State for search query and selected genre
+    const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedGenre, setSelectedGenre] = useState('');
+    const [books, setBooks] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [snackbarText, setSnackbarText]  = useState("");
 
-    // Dummy book data (replace with your actual book data)
-    const books = [
-        { title: 'Book 1', author: 'Author 1', genre: 'Fiction' },
-        { title: 'Book 2', author: 'Author 2', genre: 'Mystery' },
-        { title: 'Book 3', author: 'Author 3', genre: 'Science Fiction' }
-    ];
+    useEffect(() => {
+        Endpoints.doGetBooks().then(response => {
+            if(!response.ok) {
+                throw "Response Failure"
+            }
+            return response.json();
+        }).then(json => {
+            setBooks(json);
+        }).catch(e => {
+            console.log(e);
+            setSnackbarText("Server Unable to Send Book Data");
+            setOpen(true);
+        });
+    }, [])
 
     // Filter books based on search query and selected genre
     const filteredBooks = books.filter(book =>
@@ -30,7 +46,7 @@ export function Catalog() {
     ];
 
     return (
-        <div className="catalog-page">
+        <div className="catalog-page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '10px' }}>
             {/* Search Bar */}
             <TextField
                 label="Search by Title or Author"
@@ -47,7 +63,7 @@ export function Catalog() {
                         </InputAdornment>
                     ),
                 }}
-                style={{ marginBottom: '20px', width: '100%' }}
+                style={{ marginBottom: '20px', width: '100%', maxWidth: '1150px' }}
             />
 
             {/* Genre Filter Dropdown */}
@@ -58,7 +74,7 @@ export function Catalog() {
                 size="small"
                 value={selectedGenre}
                 onChange={(e) => setSelectedGenre(e.target.value)}
-                style={{ marginBottom: '20px', width: '100%' }}
+                style={{ marginBottom: '20px', width: '100%', maxWidth: '1150px' }}
             >
                 <MenuItem value="">All</MenuItem>
                 {genres.map((genre, index) => (
@@ -67,18 +83,16 @@ export function Catalog() {
             </TextField>
 
             {/* Display Filtered Books */}
-            <Grid container spacing={2}>
-                {filteredBooks.map((book, index) => (
-                    <Grid item xs={4} key={index}>
-                        <div className="book-container">
-                            <BookIcon fontSize="large" />
-                            <Typography variant="h6">{book.title}</Typography>
-                            <Typography variant="subtitle1">{book.author}</Typography>
-                            <Typography variant="subtitle2">{book.genre}</Typography>
-                        </div>
-                    </Grid>
-                ))}
-            </Grid>
+            <div style={{ width: '100%', maxWidth: '1150px', marginLeft: '100px' }}>
+                <BookContainer books={filteredBooks} />
+            </div>
+
+            <Snackbar
+                    open={open}
+                    autoHideDuration={60000}
+                    onClose={() => setOpen(false)}
+                    message={snackbarText}
+                />
         </div>
     );
 }

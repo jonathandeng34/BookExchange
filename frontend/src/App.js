@@ -14,6 +14,8 @@ import { ResetPassword } from './Pages/resetPassword'
 import { DirectMessaging } from './Pages/DM'
 import { Verification } from './Pages/verification'
 import { BookListing } from './Pages/bookListing'
+import Endpoints from './Endpoints.js';
+import { BooksByUser } from './Pages/userBooks.js';
 
 
 
@@ -23,28 +25,34 @@ function App() {
 
 
   const [text, setText] = useState('')
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    fetch('/test').then(res => res.json())
-    .then(json => {
-      setText(JSON.stringify(json))
-    })
+    Endpoints.verifyIdentity().then(response => {
+      if(response.ok) {
+        setLoggedIn(true);
+      }
+    }).catch(e => {
+      console.log(e);
+    });
   }, []);
 
   return (
   <>
     <Router>
       <Routes>
-        <Route element={<Layout/>}> 
-          <Route path="/" element={<Home/>}/>
-          <Route path="/Login" element={<Login/>}/>
-          <Route path="/BookInformation" element = {<BookInformation/>}/>
+        <Route element={<Layout loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>}> 
+        <Route path="/" element = {loggedIn ? (<Home setLoggedIn={setLoggedIn}/>) : (<Login setLoggedIn={setLoggedIn}/>)}/>
+          <Route path="/Home" element={<Home setLoggedIn={setLoggedIn}/>}/>
+          <Route path="/Login" element={<Login setLoggedIn={setLoggedIn}/>}/>
+          <Route path="/BookInformation/:bookId" element = {<BookInformation setLoggedIn={setLoggedIn}/>}/>
           <Route path="/Catalog" element = {<Catalog/>}/>
           <Route path="/CreateAccount" element = {<CreateAccount/>}/>
           <Route path="/ResetPassword" element = {<ResetPassword/>}/>
-          <Route path="/DirectMessage" element = {<DirectMessaging/>}/>
+          <Route path="/DirectMessage" element = {<DirectMessaging setLoggedIn={setLoggedIn}/>}/>
           <Route path="/Verification" element = {<Verification/>}/>
-          <Route path="/BookListing" element = {<BookListing/>}/>
+          <Route path="/BookListing" element = {<BookListing setLoggedIn={setLoggedIn}/>}/>
+          <Route path="/UserBooks/:userId" element = {<BooksByUser/>}/>
 
 
         </Route>
