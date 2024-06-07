@@ -387,7 +387,7 @@ export function DirectMessaging({ setLoggedIn }) {
             {messages.map(message => (
               <div key={message._id} style={{ textAlign: message.senderID._id === getOtherUser()?._id ? 'left' : 'right', marginBottom: '10px', maxWidth: '50%', wordWrap: 'break-word', marginLeft: message.senderID._id === getOtherUser()?._id ? '10px' : 'auto', marginRight: message.senderID._id !== getOtherUser()?._id ? '10px' : 'auto' }}>
                 <Typography variant="body1" style={{ display: 'inline-block', backgroundColor: message.senderID._id === getOtherUser()?._id ? '#e6e6e6' : '#2979ff', padding: '8px', borderRadius: '8px', color: message.senderID._id === getOtherUser()?._id ? '#000' : '#fff' }}>{message.content}</Typography>
-                <Typography variant="caption" style={{ display: 'block', textAlign: message.senderID._id === getOtherUser()?._id ? 'left' : 'right', marginTop: '5px', color: '#666' }}>{message.createdAt}</Typography>
+                <Typography variant="caption" style={{ display: 'block', textAlign: message.senderID._id === getOtherUser()?._id ? 'left' : 'right', marginTop: '5px', color: '#666' }}>{new Date(message.createdAt).toLocaleString()}</Typography>
               </div>
             ))}
             <div ref={messagesEndRef} />
