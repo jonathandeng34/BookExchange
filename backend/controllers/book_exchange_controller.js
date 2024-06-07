@@ -412,26 +412,28 @@ router.post('/confirmreexchange/:id', validateID(), validateJWT(), (req, res) =>
             updateBody, {new: true});
 
         if(doc.reexchangeStatus == 3) {
-            await User.updateMany({
-                $or: [
-                    {_id: exchange.participantOne},
-                    {_id: exchange.participantTwo}
-                ]
-            }, {
-                $inc: {
-                    userRating: 1
-                }
-            });
 
-            await User.findByIdAndUpdate(exchange.participantOne, {
-                $push: {
+            const docPartOne = await User.findByIdAndUpdate(exchange.participantOne, {
+                $addToSet: {
                     exchangedBooks: exchange.bookOne
                 }
             });
 
-            await User.findByIdAndUpdate(exchange.participantTwo, {
-                $push: {
+            await User.findByIdAndUpdate(exchange.participantOne, {
+                $set: {
+                    userRating: docPartOne.exchangedBooks.length
+                }
+            });
+
+            const docPartTwo = await User.findByIdAndUpdate(exchange.participantTwo, {
+                $addToSet: {
                     exchangedBooks: exchange.bookTwo
+                }
+            });
+
+            await User.findByIdAndUpdate(exchange.participantTwo, {
+                $set: {
+                    userRating: docPartTwo.exchangedBooks.length
                 }
             });
 
