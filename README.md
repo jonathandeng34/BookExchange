@@ -24,10 +24,11 @@
 # Technologies
 This application utilizes the MERN stack for all of its functions. All dependencies are contained within:
 
-- MongoDB
-- Express
-- React
-- Node
+- MongoDB <img src = https://1000logos.net/wp-content/uploads/2020/08/MongoDB-Emblem.jpg width = 60 px>
+
+- Express <img src = https://ajeetchaulagain.com/static/7cb4af597964b0911fe71cb2f8148d64/87351/express-js.png width = 40px>
+- React <img src = https://www.pngitem.com/pimgs/m/664-6644509_icon-react-js-logo-hd-png-download.png width = 48px>
+- Node <img src = https://cdn1.iconfinder.com/data/icons/programing-development-8/24/node_js_logo-1024.png width= 40px>
 
 # Setup
 The application requires very little setup.
@@ -59,3 +60,12 @@ Once this has been inserted, you may run npm install and then npm start in the c
 From here the app should be ready to run :).
 
 
+# Authors
+### This project was created and maintained by 
+- Sohan Agarkar 
+- Maanaskumar Gantla 
+- Jonathan Deng 
+- Danniell Xu
+- Issael Victor Montoya
+
+### This application was made for the CS35L Group Project Spring 2024
