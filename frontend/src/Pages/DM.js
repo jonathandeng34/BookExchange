@@ -235,9 +235,9 @@ export function DirectMessaging({ setLoggedIn }) {
       );
     }
     else if((curExchange.readStatus & curExchange.role) == 0) {
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
-      return (<BlueButton text={"Finished Reading Book"} onClick={confirmRead}/>);
-      </div>
+      return (<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '425px'}}>
+      <BlueButton text={"Finished Reading Book"} onClick={confirmRead}/>
+      </div>)
     }
     else if(curExchange.readStatus != 3) {
       return (
