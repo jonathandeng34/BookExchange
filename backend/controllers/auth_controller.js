@@ -29,7 +29,7 @@ router.post('/register', validateSchema(RegisterSchema), async (req, res) => {
     //Make sure the given email is a g.ucla.edu email
 
     let domainName = req.body.email.split('@')[1];
-    if(domainName != "g.ucla.edu" && domainName != "ucla.edu") {
+    if(!domainName.includes("ucla.edu")) {
         res.status(400);
         res.json({
             "reason": "Invalid Email. Please use a valid UCLA address"
