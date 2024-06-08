@@ -98,11 +98,11 @@ From here the app should be ready to run :).
 
 # Authors
 ### This project was created and maintained by 
-- Sohan Agarkar 
-- Maanaskumar Gantla 
-- Jonathan Deng 
-- Danniell Xu
-- Issael Victor Montoya
+- Sohan Agarkar: sohanagarkar@gmail.com
+- Maanaskumar Gantla: gantlamr@gmail.com
+- Jonathan Deng: jonathandengq34@gmail.com
+- Danniell Xu: danniell@Danniells-MacBook-Air.local
+- Issael Victor Montoya: victormon04@gmail.com, victor2004@outlook.com
 
 ### This application was made for the CS35L Group Project Spring 2024
 
