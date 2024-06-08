@@ -18,6 +18,8 @@
 
 - **Recommendations** on books to try out for a user based on the genres they exchange for the most
 
+- **Forgot Password** sends a code to the user's email to allow them to reset their password
+
 - **DM Page**
     - Exchange Requested functions such as accepting or rejecting a request
     - Allows the requestee to select a book from the requester's selection
