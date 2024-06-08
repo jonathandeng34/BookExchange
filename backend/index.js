@@ -8,15 +8,23 @@ import Book from './db_models/book_model.js'
 import User from './db_models/user_model.js'
 import { BookController } from './controllers/book_controller.js'
 import { UserController } from './controllers/user_controller.js'
-import scheduleJobs from './cron/cron_jobs.js';
+import scheduleJobs from './cron/cron_jobs.js'
 import { AuthController } from './controllers/auth_controller.js'
 import { BookExchangeController } from './controllers/book_exchange_controller.js';
+import cors from 'cors';
+import { MessageController } from './controllers/message_controller.js'
+import { app, server } from './socket.js'
 
 
 
 const port = process.env.PORT || 5000;
-const app = express()
 app.use(cookieParser())
+app.use(cors({
+    credentials: true,
+    origin: process.env.FRONTEND_ORIGIN
+}))
+
+app.use(express.static('../frontend/build'));
 
 connectDB()
 
@@ -26,6 +34,7 @@ app.use('/book', BookController);
 app.use('/user', UserController);
 app.use('/auth', AuthController);
 app.use('/bookexchange', BookExchangeController);
+app.use('/message', MessageController);
 
 // app.get('/test', (req, res) => {
 //     res.json({
@@ -92,7 +101,7 @@ mongoose.connection.once('open', () => {
     // GENERATE DUMMY DATA
 //    generateDummyData();
 
-    app.listen(port, () => {
+    server.listen(port, () => {
         console.log("Server started on port " + port);
         //Cron Jobs
         scheduleJobs();    
@@ -106,8 +115,7 @@ async function generateDummyData() {
             _id: new mongoose.Types.ObjectId('6643d77345389a92052ed220'),
             username: "Chocolate Enjoyer",
             password: "This should be encrypted btw",
-            email: "hydroflask@g.ucla.edu",
-            userRating: 5
+            email: "hydroflask@g.ucla.edu"
         });
         const doc = await dummyUser.save();
         const dummyBook = new Book({

@@ -1,1 +1,27 @@
 /* CSS goes  here :) */
+/* App.css */
+
+body, html, #root {
+    height: 100%;
+    margin: 0;
+    background-color: #FBFFFF; /* Background color from the provided CSS */
+    color: #476B70; /* Default text color */
+    font-family: Inter, Helvetica, Arial, sans-serif; /* Add font-family for consistency */
+  }
+  
+  .App {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #FBFFFF; /* Background color from the provided CSS */
+  }
+  
+  .main-container {
+    width: 100%;
+    max-width: 1200px; /* Adjust as needed */
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #FBFFFF; /* Background color from the provided CSS */
+  }
+  
