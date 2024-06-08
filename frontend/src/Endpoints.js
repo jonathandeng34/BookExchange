@@ -268,4 +268,6 @@ class EndPoints
     
 }
 
-export default new EndPoints();
+const instance = new EndPoints();
+
+export default instance;

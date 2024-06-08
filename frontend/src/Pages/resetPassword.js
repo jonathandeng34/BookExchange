@@ -23,7 +23,6 @@ const largeLogoStyle = {
 
 export function ResetPassword() { 
     const [loading, setLoading] = useState(false);
-    const [resetLoading, setResetLoading] = useState(false);
     const [snackbarText, setSnackbarText] = useState("");
     const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState({
@@ -159,7 +158,7 @@ export function ResetPassword() {
                             sx={{ mt: 3, mb: 2 }}
                             disabled={loading}
                         >
-                            {resetLoading ? <CircularProgress size={24} /> : 'Reset Password'}
+                            {'Reset Password'}
                         </Button>
                     </Box>
                 </Box>
