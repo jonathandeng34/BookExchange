@@ -417,7 +417,7 @@ router.post('/confirmreexchange/:id', validateID(), validateJWT(), (req, res) =>
                 $addToSet: {
                     exchangedBooks: exchange.bookOne
                 }
-            });
+            }, {new: true});
 
             await User.findByIdAndUpdate(exchange.participantOne, {
                 $set: {
@@ -429,7 +429,7 @@ router.post('/confirmreexchange/:id', validateID(), validateJWT(), (req, res) =>
                 $addToSet: {
                     exchangedBooks: exchange.bookTwo
                 }
-            });
+            }, {new: true});
 
             await User.findByIdAndUpdate(exchange.participantTwo, {
                 $set: {
