@@ -1,1 +1,320 @@
 /* CSS goes  here :) */
+
+
+html,body
+{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background: #F5EFE6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Log in Frame Wrapper */
+.login-frame-wrapper {
+    width: 80%;
+    max-width: 1331px;
+    background: #FBFFFF;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Log in Frame */
+.login-frame {
+    width: 100%;
+    max-width: 845px;
+    background: #FFFFFF;
+    padding: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* Log In */
+.login {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 64px;
+    text-transform: uppercase;
+    color: #000000;
+    margin-bottom: 40px;
+}
+
+/* Form */
+.form {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Input fields */
+.username, .password {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #000000;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Labels */
+.email, .password-label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #4D869C;
+    text-align: left;
+}
+
+/* Login btn */
+.login-btn {
+    background: #FBFFFF;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    text-align: center;
+    padding: 10px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    text-transform: uppercase;
+    color: #4D869C;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+
+
+/* no accoutn styles */
+.no-account {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: #4D869C;
+    margin-top: 20px;
+}
+
+
+/* Catalog Page */
+.catalog-page {
+    position: relative;
+    width: 1331px;
+    height: 1437px;
+    background: #FBFFFF;
+    align-items: center;
+    mix-blend-mode: normal;
+}
+
+/* Book Icon Styles */
+.book-icon {
+    position: absolute;
+    width: 128px;
+    height: 128px;
+}
+
+
+/* Book Icon Background Colors */
+.book-icon:nth-of-type(1) {
+    left: 219.23px;
+    top: 469px;
+    background: #FFFFFF;
+}
+
+.book-icon:nth-of-type(2) {
+    left: 219.23px;
+    top: 765px;
+    background: #FFFFFF;
+}
+
+.book-icon:nth-of-type(3) {
+    left: 234px;
+    top: 1068px;
+    background: #FFFFFF;
+}
+
+/* Book Text Styles */
+.book-text {
+    position: absolute;
+    font-family: 'Inter';
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 36px;
+    display: flex;
+    align-items: center;
+    color: #000000;
+}
+
+/* Book Text Positions */
+.book-text:nth-of-type(1) {
+    width: 84px;
+    height: 36px;
+    left: 127.23px;
+    top: 410px;
+}
+
+.book-text:nth-of-type(2) {
+    width: 87px;
+    height: 36px;
+    left: 127px;
+    top: 695.88px;
+}
+
+.book-text:nth-of-type(3) {
+    width: 88px;
+    height: 36px;
+    left: 111px;
+    top: 1032px;
+}
+
+/* Book Information Links */
+.book-info-link {
+    position: absolute;
+    font-family: 'Inter';
+    font-weight: 600;
+    font-size: 36px;
+    line-height: 54px;
+    display: flex;
+    align-items: center;
+    color: #4D869C;
+}
+
+/* Book Information Link Positions */
+.book-info-link:nth-of-type(1) {
+    width: 518px;
+    height: 54px;
+    left: 767px;
+    top: 428px;
+}
+
+.book-info-link:nth-of-type(2) {
+    width: 518px;
+    height: 54px;
+    left: 767px;
+    top: 727px;
+}
+
+.book-info-link:nth-of-type(3) {
+    width: 518px;
+    height: 54px;
+    left: 767px;
+    top: 1060px;
+}
+
+/* Search Text Styles */
+.search-text {
+    position: absolute;
+    font-family: 'Inter';
+    font-weight: 600;
+    font-size: 36px;
+    line-height: 54px;
+    display: flex;
+    align-items: center;
+    color: #4D869C;
+    transform: rotate(0.64deg);
+}
+
+/* Search Text Position */
+.search-text-position {
+    width: 576px;
+    height: 54px;
+    left: 397.6px;
+    top: 200px;
+}
+
+/* Search Vector Styles */
+.search-vector {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #4D869C;
+}
+
+/* Search Vector Position */
+.search-vector-position {
+    left: 22.99%;
+    top: 7.59%;
+}
+
+
+/* Buttons */
+button {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Typography */
+h1, h6 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: #000000;
+}
+
+h6 {
+    margin-top: 20px;
+}
+
+/* Paper Component */
+.MuiPaper-root {
+    background: #FFFFFF;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 40px;
+}
+
+/* Book Info Section */
+.MuiTypography-body1 {
+    font-family: 'Inter', sans-serif;
+    color: #000000;
+    margin-top: 10px;
+}
+
+/* Navbar Styles */
+.navbar-container {
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    height: 60px; 
+    background-color: #f0f0f0; 
+    padding: 0 20px;
+}
+
+.navbar-link {
+    text-decoration: none; 
+    color: #000; 
+}
+
+.navbar-link:hover {
+    color: #555;
+}
+
+.navbar-button {
+    background-color: #ccc;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.navbar-button:hover {
+    background-color: #aaa;
+}
