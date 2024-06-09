@@ -102,8 +102,6 @@ From here the app should be ready to run :).
 - Danniell Xu: danniell@Danniells-MacBook-Air.local
 - Issael Victor Montoya: victormon04@gmail.com, victor2004@outlook.com
 
-### This application was made for the CS35L Group Project Spring 2024
-
 # References
 
 - React Router Quick Start Guide: https://v5.reactrouter.com/web/guides/quick-start
