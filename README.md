@@ -1,5 +1,3 @@
-# gitAGrep CS35L Spring 2024
-
 ## **Welcome to the Bruin Book Exchange Repository!**
 #### The Bruin Book Exchange is an easy way to find others who would like to dive into a new book while also sharing one of their books with others!
 
